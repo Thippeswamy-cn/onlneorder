@@ -16,18 +16,19 @@
                 <span>Local<strong>Connect</strong></span>
             </a>
 
-            <button class="header-location" type="button" aria-label="Current location: Davangere, Karnataka">
+            <button class="header-location" id="location-button" type="button" aria-label="Show my live location" aria-haspopup="dialog">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-                <span><small>Location</small><strong>Davangere, Karnataka</strong></span>
+                <span><small>Location</small><strong id="location-summary">Use current location</strong></span>
                 <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 10 3 3 3-3"/></svg>
             </button>
 
-            <label class="header-search">
+            <form class="header-search" id="service-search-form" role="search">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-                <span class="sr-only">Search services</span>
+                <label class="sr-only" for="service-search">Search services</label>
                 <input id="service-search" type="search" placeholder="What service do you need?" autocomplete="off">
-                <kbd>⌘ K</kbd>
-            </label>
+                <button class="service-search-button" id="service-search-button" type="submit">Search</button>
+                <div class="service-search-results" id="service-search-results" role="listbox" aria-label="Matching services" hidden></div>
+            </form>
 
             <div class="header-actions">
                 <button class="theme-toggle icon-button" type="button" aria-label="Switch to night mode" aria-pressed="false">
@@ -53,6 +54,48 @@
             <a href="index.html" id="desktop-profile-link">Profile</a>
         </nav>
     </header>
+
+    <dialog class="location-dialog" id="location-dialog" aria-labelledby="location-dialog-title">
+        <div class="location-dialog-header">
+            <div>
+                <span class="section-kicker">Your position</span>
+                <h2 id="location-dialog-title">Live location</h2>
+            </div>
+            <button class="location-close" id="location-close" type="button" aria-label="Close location map">&times;</button>
+        </div>
+        <form class="location-search" id="location-search">
+            <label class="sr-only" for="location-search-input">Search a place in Google Maps</label>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input id="location-search-input" type="search" placeholder="Search area, street or landmark" autocomplete="off">
+            <button type="submit">Search</button>
+        </form>
+        <div class="location-search-results" id="location-search-results" role="listbox" aria-label="Address search results" hidden></div>
+        <div class="live-map-wrap">
+            <iframe id="live-location-map" title="Your live location on Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen hidden></iframe>
+            <div class="location-placeholder" id="location-placeholder">
+                <span class="location-spinner" aria-hidden="true"></span>
+                <strong>Finding your location…</strong>
+                <small>Please allow location access when your browser asks.</small>
+            </div>
+        </div>
+        <div class="location-name" id="location-name" hidden>
+            <small>Current area</small>
+            <strong id="location-name-text">Finding area name…</strong>
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Area data © OpenStreetMap contributors</a>
+        </div>
+        <p class="location-status" id="location-status" role="status" aria-live="polite">Waiting for location permission.</p>
+        <p class="location-tip" id="location-tip" hidden></p>
+        <div class="location-details" id="location-details" hidden>
+            <span><small>Latitude</small><strong id="live-latitude">—</strong></span>
+            <span><small>Longitude</small><strong id="live-longitude">—</strong></span>
+            <span><small>Accuracy</small><strong id="live-accuracy">—</strong></span>
+        </div>
+        <div class="location-actions">
+            <button class="secondary-button" id="location-retry" type="button">Use my current location</button>
+            <a class="primary-button" id="location-maps-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Open in Google Maps</a>
+            <button class="primary-button" id="location-done" type="button">Done</button>
+        </div>
+    </dialog>
 
     <main>
         <section class="hero page-container" aria-labelledby="hero-heading">
@@ -87,14 +130,14 @@
                 <a href="#">View all services</a>
             </div>
             <div class="category-grid">
-                <a class="category-card" href="home.html?service=plumbing"><span class="category-icon">🔧</span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
-                <a class="category-card" href="home.html?service=electrical"><span class="category-icon">⚡</span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
-                <a class="category-card" href="home.html?service=cleaning"><span class="category-icon">✨</span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
-                <a class="category-card" href="home.html?service=vehicle-repair"><span class="category-icon">🚗</span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
-                <a class="category-card" href="home.html?service=appliance-repair"><span class="category-icon">🔌</span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
-                <a class="category-card" href="home.html?service=beauty"><span class="category-icon">✂️</span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
-                <a class="category-card" href="home.html?service=moving"><span class="category-icon">📦</span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
-                <a class="category-card" href="home.html?service=emergency"><span class="category-icon">🛟</span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
+                <a class="category-card" data-service="plumbing plumber pipe tap leak" href="home.html?service=plumbing"><span class="category-icon">🔧</span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
+                <a class="category-card" data-service="electrical electrician wiring light" href="home.html?service=electrical"><span class="category-icon">⚡</span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
+                <a class="category-card" data-service="cleaning cleaner housekeeping deep clean" href="home.html?service=cleaning"><span class="category-icon">✨</span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
+                <a class="category-card" data-service="vehicle repair car bike mechanic garage" href="home.html?service=vehicle-repair"><span class="category-icon">🚗</span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
+                <a class="category-card" data-service="appliance repair ac refrigerator fridge washer" href="home.html?service=appliance-repair"><span class="category-icon">🔌</span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
+                <a class="category-card" data-service="beauty salon haircut makeup spa" href="home.html?service=beauty"><span class="category-icon">✂️</span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
+                <a class="category-card" data-service="moving movers packing delivery shifting" href="home.html?service=moving"><span class="category-icon">📦</span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
+                <a class="category-card" data-service="emergency urgent help" href="home.html?service=emergency"><span class="category-icon">🛟</span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
             </div>
         </section>
 
@@ -129,7 +172,7 @@
                     </div>
                 </article>
             </div>
-            <p class="empty-state hidden" id="empty-state">No services found. Try another search.</p>
+            <p class="empty-state hidden" id="empty-state">No matching professionals are available yet.</p>
         </section>
 
         <section class="content-section soft-section" aria-labelledby="how-heading">
