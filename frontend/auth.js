@@ -141,6 +141,10 @@ if (loginForm) {
             });
             message.textContent = data.message;
             localStorage.setItem("localConnectUser", data.name || "User");
+            localStorage.setItem("localConnectProfile", JSON.stringify({
+                name: data.name || "User",
+                email: email.value.trim()
+            }));
             setTimeout(() => {
                 window.location.href = "home.html";
             }, 700);
@@ -243,7 +247,12 @@ if (signupForm) {
                 verificationToken
             });
             message.textContent = data.message;
-            setTimeout(() => { window.location.href = "index.html"; }, 1400);
+            localStorage.setItem("localConnectUser", name.value.trim());
+            localStorage.setItem("localConnectProfile", JSON.stringify({
+                name: name.value.trim(),
+                email: email.value.trim()
+            }));
+            setTimeout(() => { window.location.href = "home.html"; }, 900);
         } catch (error) {
             message.textContent = error.message;
             setButtonLoading(submit, false);
