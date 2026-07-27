@@ -1,0 +1,887 @@
+:root {
+    color: #172033;
+    background: #eef1f7;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-synthesis: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    padding: 28px;
+    display: grid;
+    place-items: center;
+    background:
+        radial-gradient(circle at 8% 10%, rgba(112, 89, 233, .13), transparent 27%),
+        radial-gradient(circle at 92% 90%, rgba(22, 184, 166, .12), transparent 28%),
+        #f1f3f8;
+}
+
+.auth-shell {
+    width: min(1080px, 100%);
+    min-height: min(720px, calc(100vh - 56px));
+    display: grid;
+    grid-template-columns: minmax(380px, .95fr) minmax(440px, 1.05fr);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .85);
+    border-radius: 30px;
+    background: white;
+    box-shadow: 0 30px 90px rgba(31, 37, 68, .16);
+}
+
+.visual-panel {
+    position: relative;
+    min-height: 100%;
+    padding: 44px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background:
+        linear-gradient(145deg, rgba(28, 24, 67, .2), transparent),
+        linear-gradient(145deg, #5546d7 0%, #6d55de 45%, #2c9ea0 120%);
+    color: white;
+    isolation: isolate;
+}
+
+.signup-visual {
+    background:
+        linear-gradient(145deg, rgba(16, 45, 67, .12), transparent),
+        linear-gradient(145deg, #4936c8 0%, #5952d8 48%, #159f94 125%);
+}
+
+.visual-panel::after {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    opacity: .16;
+    background-image: radial-gradient(rgba(255,255,255,.75) .7px, transparent .7px);
+    background-size: 17px 17px;
+    content: "";
+}
+
+.visual-glow {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    filter: blur(4px);
+}
+
+.glow-one {
+    width: 330px;
+    height: 330px;
+    top: -125px;
+    right: -135px;
+    background: rgba(119, 234, 218, .26);
+}
+
+.glow-two {
+    width: 280px;
+    height: 280px;
+    bottom: -120px;
+    left: -110px;
+    background: rgba(255, 194, 112, .17);
+}
+
+.logo-lockup,
+.mobile-brand {
+    display: grid;
+    grid-template-columns: 42px auto;
+    align-items: center;
+    gap: 11px;
+}
+
+.logo-lockup {
+    color: white;
+    font-size: 20px;
+    font-weight: 780;
+    letter-spacing: -.3px;
+    text-decoration: none;
+}
+
+.logo-lockup:hover {
+    text-decoration: none;
+}
+
+.logo-mark {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.42);
+    border-radius: 13px;
+    background: rgba(255,255,255,.16);
+    color: white;
+    font-size: 20px;
+    font-weight: 850;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.2);
+    backdrop-filter: blur(10px);
+}
+
+.visual-copy {
+    position: relative;
+    z-index: 1;
+    margin: auto 0;
+}
+
+.eyebrow {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #d9fff8;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.eyebrow.dark {
+    margin-bottom: 10px;
+    color: #6656da;
+}
+
+.visual-copy h2 {
+    margin: 0 0 20px;
+    font-size: clamp(34px, 4.2vw, 49px);
+    line-height: 1.08;
+    letter-spacing: -1.8px;
+}
+
+.visual-copy > p {
+    max-width: 420px;
+    margin: 0;
+    color: rgba(255,255,255,.78);
+    font-size: 16px;
+    line-height: 1.7;
+}
+
+.service-carousel {
+    position: relative;
+    width: 100%;
+    height: 218px;
+    margin: 22px 0 5px;
+}
+
+.carousel-stage {
+    position: relative;
+    width: calc(100% - 40px);
+    height: 199px;
+    margin: auto;
+    perspective: 900px;
+}
+
+.service-photo {
+    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 0;
+    width: 32%;
+    height: 184px;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.3);
+    border-radius: 16px;
+    background: rgba(255,255,255,.14);
+    box-shadow: 0 16px 30px rgba(30, 24, 96, .23);
+    opacity: 0;
+    backdrop-filter: blur(12px);
+    transform: translate(-50%, -50%) scale(.62);
+    transition: transform .65s cubic-bezier(.22,.8,.25,1), opacity .5s ease, filter .5s ease;
+    cursor: pointer;
+    pointer-events: none;
+}
+
+.service-photo.is-active {
+    z-index: 3;
+    width: 47%;
+    opacity: 1;
+    filter: none;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+}
+
+.service-photo.is-prev {
+    z-index: 1;
+    opacity: .72;
+    filter: saturate(.8) brightness(.84);
+    transform: translate(-142%, -50%) scale(.72) rotateY(12deg);
+    pointer-events: auto;
+}
+
+.service-photo.is-next {
+    z-index: 1;
+    opacity: .72;
+    filter: saturate(.8) brightness(.84);
+    transform: translate(42%, -50%) scale(.72) rotateY(-12deg);
+    pointer-events: auto;
+}
+
+.service-photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    transition: transform .45s ease;
+}
+
+.service-photo:hover img {
+    transform: scale(1.08);
+}
+
+.service-photo figcaption {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 48%;
+    padding: 45px 12px 12px;
+    color: white;
+    background: linear-gradient(180deg, transparent 0%, rgba(11,13,28,.78) 45%, rgba(8,10,23,.94) 100%);
+    text-align: left;
+    transform: translateY(24px);
+    transition: transform .45s ease;
+}
+
+.service-photo.is-active figcaption,
+.service-photo:hover figcaption {
+    transform: translateY(0);
+}
+
+.service-photo figcaption strong {
+    display: block;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.slide-category {
+    margin-bottom: 3px;
+    display: block;
+    color: #9df5df;
+    font-size: 7px;
+    font-weight: 850;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.service-photo figcaption p {
+    margin: 4px 0 7px;
+    display: none;
+    color: rgba(255,255,255,.72);
+    font-size: 8px;
+    line-height: 1.35;
+}
+
+.service-photo.is-active figcaption p {
+    display: block;
+}
+
+.service-photo figcaption a {
+    padding: 5px 8px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 7px;
+    background: white;
+    color: #5145c8;
+    font-size: 8px;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.service-photo.is-active figcaption a {
+    display: flex;
+}
+
+.service-photo figcaption a span {
+    font-size: 11px;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 72px;
+    z-index: 6;
+    width: 29px;
+    height: 29px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.27);
+    border-radius: 50%;
+    background: rgba(24,23,74,.25);
+    color: white;
+    font-size: 22px;
+    line-height: 1;
+    backdrop-filter: blur(10px);
+}
+
+.carousel-arrow:hover {
+    background: rgba(255,255,255,.24);
+}
+
+.carousel-prev { left: 0; }
+.carousel-next { right: 0; }
+
+.carousel-dots {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.carousel-dots button {
+    width: 5px;
+    height: 5px;
+    padding: 0;
+    border: 0;
+    border-radius: 99px;
+    background: rgba(255,255,255,.35);
+    transition: width .25s ease, background .25s ease;
+}
+
+.carousel-dots button.active {
+    width: 17px;
+    background: white;
+}
+
+.booking-marquee {
+    width: 100%;
+    margin: 7px 0 3px;
+    overflow: hidden;
+    color: rgba(255,255,255,.65);
+    font-size: 9px;
+    font-weight: 650;
+    white-space: nowrap;
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+}
+
+.booking-marquee div {
+    width: max-content;
+    animation: booking-scroll 16s linear infinite;
+}
+
+.booking-marquee span,
+.booking-marquee i {
+    margin-right: 12px;
+}
+
+.booking-marquee i {
+    color: #8ff6dd;
+    font-style: normal;
+}
+
+@keyframes booking-scroll {
+    from { transform: translateX(12%); }
+    to { transform: translateX(-88%); }
+}
+
+.trust-row {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.trust-row p {
+    margin: 0;
+    color: rgba(255,255,255,.78);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.trust-row strong {
+    display: block;
+    color: white;
+    font-size: 14px;
+}
+
+.avatar-stack {
+    display: flex;
+}
+
+.avatar-stack span {
+    width: 34px;
+    height: 34px;
+    margin-left: -7px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #6654d9;
+    border-radius: 50%;
+    background: #f1e9ff;
+    color: #5443c5;
+    font-size: 9px;
+    font-weight: 850;
+}
+
+.avatar-stack span:first-child {
+    margin-left: 0;
+    background: #dff8f4;
+}
+
+.avatar-stack span:last-child {
+    background: #fff0d8;
+}
+
+.security-pill,
+.quote-card {
+    align-self: flex-start;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(25, 25, 73, .18);
+    box-shadow: 0 12px 30px rgba(28, 28, 82, .15);
+    backdrop-filter: blur(14px);
+}
+
+.security-pill {
+    padding: 10px 14px;
+    border-radius: 99px;
+    color: rgba(255,255,255,.82);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.security-pill span {
+    margin-right: 6px;
+    color: #8bf0d8;
+}
+
+.quote-card {
+    padding: 16px 18px;
+    border-radius: 15px;
+}
+
+.quote-card p {
+    margin: 0 0 5px;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.quote-card span {
+    color: rgba(255,255,255,.62);
+    font-size: 11px;
+}
+
+.benefit-list {
+    margin: 30px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+    list-style: none;
+    color: rgba(255,255,255,.88);
+    font-size: 14px;
+}
+
+.benefit-list span {
+    width: 22px;
+    height: 22px;
+    margin-right: 9px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(126, 246, 219, .18);
+    color: #9cffe8;
+    font-size: 11px;
+}
+
+.form-panel {
+    width: min(100%, 510px);
+    margin: auto;
+    padding: 54px 58px;
+}
+
+.mobile-brand {
+    display: none;
+    margin-bottom: 34px;
+    color: #222a3d;
+}
+
+.mobile-brand .logo-mark {
+    background: linear-gradient(135deg, #6554dc, #2ca8a0);
+}
+
+h1 {
+    margin: 0 0 10px;
+    color: #121b2f;
+    font-size: clamp(30px, 5vw, 39px);
+    letter-spacing: -1.2px;
+}
+
+.intro {
+    margin: 0 0 32px;
+    color: #68738a;
+    line-height: 1.55;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.step-label {
+    margin-bottom: 15px;
+    color: #7b8599;
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.inline-field {
+    display: flex;
+    gap: 9px;
+}
+
+.inline-field input {
+    flex: 1;
+}
+
+.secondary-button {
+    flex: 0 0 auto;
+    padding: 0 16px;
+    border: 1px solid #5975e9;
+    border-radius: 11px;
+    background: #f5f7ff;
+    color: #5069d5;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.secondary-button:disabled,
+.primary-button:disabled {
+    cursor: wait;
+    opacity: .65;
+}
+
+.button-loading {
+    position: relative;
+    cursor: wait !important;
+    pointer-events: none;
+}
+
+.button-loading::before {
+    width: 15px;
+    height: 15px;
+    margin-right: 8px;
+    display: inline-block;
+    vertical-align: -3px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    content: "";
+    animation: button-spin .65s linear infinite;
+}
+
+@keyframes button-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .button-loading::before {
+        animation-duration: 1.3s;
+    }
+
+    .service-photo,
+    .booking-marquee div {
+        animation: none;
+    }
+}
+
+.otp-input {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 750;
+    letter-spacing: .45em;
+}
+
+.field-hint {
+    margin-top: 6px;
+    display: block;
+    color: #7b8599;
+    font-size: 12px;
+}
+
+.text-button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 7px;
+    border: 0;
+    background: transparent;
+    color: #5069d5;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.verified-email {
+    margin-bottom: 20px;
+    padding: 13px 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    border: 1px solid #bce7dc;
+    border-radius: 11px;
+    background: #effbf8;
+    color: #147361;
+    font-size: 13px;
+}
+
+.verified-email strong {
+    overflow-wrap: anywhere;
+}
+
+label {
+    color: #344057;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.form-group > label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    min-width: 0;
+    padding: 13px 14px;
+    border: 1px solid #d7dbe5;
+    border-radius: 12px;
+    background: #f9fafc;
+    color: #18233a;
+    font: inherit;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+input::placeholder {
+    color: #96a0b2;
+}
+
+input:focus {
+    outline: none;
+    border-color: #5975e9;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(89, 117, 233, .12);
+}
+
+input.invalid {
+    border-color: #d84a5c;
+    box-shadow: 0 0 0 3px rgba(216, 74, 92, .09);
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-field input {
+    padding-right: 65px;
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    padding: 5px;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: #526bd1;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.small-link,
+.secondary a {
+    color: #5069d5;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.small-link {
+    font-size: 13px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.remember {
+    margin: 2px 0 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.remember input {
+    width: 17px;
+    height: 17px;
+    margin: 1px 0 0;
+    accent-color: #5975e9;
+}
+
+.primary-button {
+    width: 100%;
+    padding: 14px 18px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(100deg, #5d4bd5, #7361e5);
+    color: white;
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(80, 105, 213, .22);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.primary-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 13px 26px rgba(80, 105, 213, .28);
+}
+
+.primary-button:active {
+    transform: translateY(0);
+}
+
+.error {
+    min-height: 17px;
+    margin-top: 5px;
+    display: block;
+    color: #c93b4d;
+    font-size: 12px;
+}
+
+.error.standalone {
+    margin-top: -15px;
+    margin-bottom: 12px;
+}
+
+.form-message {
+    min-height: 21px;
+    margin: 13px 0 0;
+    color: #16816f;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.secondary {
+    margin: 22px 0 0;
+    color: #6e788d;
+    text-align: center;
+    font-size: 14px;
+}
+
+.legal-copy {
+    margin: 18px 0 0;
+    color: #9ba2b1;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.legal-copy a {
+    color: #747c8c;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 18px 12px;
+    }
+
+    .form-panel {
+        padding: 30px 22px;
+    }
+
+    .inline-field {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .secondary-button {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 840px) {
+    body {
+        padding: 18px;
+    }
+
+    .auth-shell {
+        width: min(520px, 100%);
+        min-height: auto;
+        display: block;
+        border-radius: 24px;
+    }
+
+    .visual-panel {
+        min-height: 250px;
+        padding: 18px 28px;
+        display: block;
+        border-radius: 0;
+    }
+
+    .visual-panel .logo-lockup,
+    .visual-panel .eyebrow,
+    .visual-panel .visual-copy > h2,
+    .visual-panel .visual-copy > p,
+    .visual-panel .trust-row,
+    .visual-panel .security-pill,
+    .visual-panel .benefit-list,
+    .visual-panel .quote-card,
+    .visual-panel .booking-marquee {
+        display: none;
+    }
+
+    .visual-copy {
+        margin: 0;
+    }
+
+    .service-carousel {
+        height: 214px;
+        margin: 0;
+    }
+
+    .service-photo figcaption strong {
+        font-size: 11px;
+    }
+
+    .service-photo figcaption p {
+        display: none !important;
+    }
+
+    .form-panel {
+        padding: 44px 38px;
+    }
+
+    .mobile-brand {
+        display: grid;
+    }
+}

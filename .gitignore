@@ -1,0 +1,27 @@
+# Environment files (keep the documented example)
+.env
+.env.*
+!.env.example
+
+# Python runtime files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local data and logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Frontend dependencies and build output
+node_modules/
+dist/
+build/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

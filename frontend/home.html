@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book trusted local services in Davangere, Karnataka">
+    <title>LocalConnect — Trusted local services</title>
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="premium-card.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-main page-container">
+            <a class="brand" href="home.html" aria-label="LocalConnect home">
+                <span class="brand-mark">L</span>
+                <span>Local<strong>Connect</strong></span>
+            </a>
+
+            <button class="header-location" type="button" aria-label="Current location: Davangere, Karnataka">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                <span><small>Location</small><strong>Davangere, Karnataka</strong></span>
+                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 10 3 3 3-3"/></svg>
+            </button>
+
+            <label class="header-search">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                <span class="sr-only">Search services</span>
+                <input id="service-search" type="search" placeholder="What service do you need?" autocomplete="off">
+                <kbd>⌘ K</kbd>
+            </label>
+
+            <div class="header-actions">
+                <button class="theme-toggle icon-button" type="button" aria-label="Switch to night mode" aria-pressed="false">
+                    <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5 8.5 8.5 0 1 0 20.5 14.3Z"/></svg>
+                    <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                </button>
+                <button class="notification-button icon-button" type="button" aria-label="Notifications">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+                    <span></span>
+                </button>
+                <a class="sign-in-button" href="index.html">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    <span>Sign In</span>
+                </a>
+            </div>
+        </div>
+
+        <nav class="desktop-nav page-container" aria-label="Primary navigation">
+            <a class="active" href="home.html">Home</a>
+            <a href="#recommended">Bookings</a>
+            <a href="#messages">Messages</a>
+            <a href="#recommended">Favourites</a>
+            <a href="index.html">Profile</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero page-container" aria-labelledby="hero-heading">
+            <p class="eyebrow">Trusted services in Davangere</p>
+            <h1 id="hero-heading">Book trusted local services near you</h1>
+            <p>Compare verified professionals, check ratings and book instantly.</p>
+            <div class="category-chips" aria-label="Popular service categories">
+                <a href="home.html?service=plumbing">Plumbing</a>
+                <a href="home.html?service=electrical">Electrical</a>
+                <a href="home.html?service=cleaning">Cleaning</a>
+                <a href="home.html?service=vehicle-repair">Vehicle Repair</a>
+                <a href="home.html?service=appliance-repair">Appliance Repair</a>
+                <a href="home.html?service=beauty">Beauty</a>
+                <a href="#categories">More Services</a>
+            </div>
+        </section>
+
+        <section class="featured-section" aria-labelledby="featured-heading">
+            <div class="section-heading page-container">
+                <div>
+                    <span class="section-kicker">Hand-picked for you</span>
+                    <h2 id="featured-heading">Featured services</h2>
+                </div>
+                <p>Highly rated professionals available near Davangere</p>
+            </div>
+            <div id="premium-service-card"></div>
+        </section>
+
+        <section class="content-section page-container" id="categories" aria-labelledby="categories-heading">
+            <div class="section-heading">
+                <div><span class="section-kicker">Explore services</span><h2 id="categories-heading">Popular categories</h2></div>
+                <a href="#">View all services</a>
+            </div>
+            <div class="category-grid">
+                <a class="category-card" href="home.html?service=plumbing"><span class="category-icon">🔧</span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
+                <a class="category-card" href="home.html?service=electrical"><span class="category-icon">⚡</span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
+                <a class="category-card" href="home.html?service=cleaning"><span class="category-icon">✨</span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
+                <a class="category-card" href="home.html?service=vehicle-repair"><span class="category-icon">🚗</span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
+                <a class="category-card" href="home.html?service=appliance-repair"><span class="category-icon">🔌</span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
+                <a class="category-card" href="home.html?service=beauty"><span class="category-icon">✂️</span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
+                <a class="category-card" href="home.html?service=moving"><span class="category-icon">📦</span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
+                <a class="category-card" href="home.html?service=emergency"><span class="category-icon">🛟</span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
+            </div>
+        </section>
+
+        <section class="content-section page-container" id="recommended" aria-labelledby="recommended-heading">
+            <div class="section-heading">
+                <div><span class="section-kicker">Top rated nearby</span><h2 id="recommended-heading">Recommended professionals near you</h2></div>
+                <button class="text-button" type="button">See all</button>
+            </div>
+            <div class="professional-list" id="provider-list">
+                <article class="professional-card provider-card" data-service="plumber plumbing">
+                    <img src="assets/services/plumber.png" alt="Sri Sai plumbing professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>Sri Sai Plumbing Works <span class="verified" aria-label="Verified professional">✓</span></h3><p>Plumbing specialist</p></div><button class="bookmark" type="button" aria-label="Save Sri Sai Plumbing Works">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.8 <small>(126 reviews)</small></span><span>2.1 km away</span><span class="available"><i></i> Available today</span></div>
+                        <div class="professional-footer"><strong>From ₹299</strong><div><a class="secondary-button" href="#">View Profile</a><a class="primary-button" href="home.html?service=plumber">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="car vehicle mechanic repair">
+                    <img src="assets/services/car-mechanic.png" alt="RK Motors vehicle repair professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>RK Motors &amp; Service <span class="verified" aria-label="Verified professional">✓</span></h3><p>Car and bike mechanic</p></div><button class="bookmark" type="button" aria-label="Save RK Motors and Service">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.7 <small>(89 reviews)</small></span><span>4.5 km away</span><span class="available"><i></i> Available today</span></div>
+                        <div class="professional-footer"><strong>From ₹499</strong><div><a class="secondary-button" href="#">View Profile</a><a class="primary-button" href="home.html?service=car-mechanic">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="electrician electrical">
+                    <img src="assets/services/electrician.png" alt="Davangere electrical service professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>Davangere Electricals <span class="verified" aria-label="Verified professional">✓</span></h3><p>Certified electrician</p></div><button class="bookmark" type="button" aria-label="Save Davangere Electricals">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.9 <small>(74 reviews)</small></span><span>3.2 km away</span><span class="available"><i></i> Available now</span></div>
+                        <div class="professional-footer"><strong>From ₹349</strong><div><a class="secondary-button" href="#">View Profile</a><a class="primary-button" href="home.html?service=electrician">Book Now</a></div></div>
+                    </div>
+                </article>
+            </div>
+            <p class="empty-state hidden" id="empty-state">No services found. Try another search.</p>
+        </section>
+
+        <section class="content-section soft-section" aria-labelledby="how-heading">
+            <div class="page-container">
+                <div class="section-heading centered"><div><span class="section-kicker">Simple booking</span><h2 id="how-heading">How it works</h2></div></div>
+                <ol class="steps-grid">
+                    <li><span>1</span><strong>Choose a service</strong><p>Find the help you need.</p></li>
+                    <li><span>2</span><strong>Select a professional</strong><p>Compare ratings and prices.</p></li>
+                    <li><span>3</span><strong>Pick a date and time</strong><p>Choose a convenient slot.</p></li>
+                    <li><span>4</span><strong>Track the professional</strong><p>Follow their live arrival.</p></li>
+                    <li><span>5</span><strong>Pay securely</strong><p>Use a trusted payment method.</p></li>
+                </ol>
+            </div>
+        </section>
+
+        <section class="content-section page-container split-section" aria-labelledby="why-heading">
+            <div class="why-intro"><span class="section-kicker">Reliable from start to finish</span><h2 id="why-heading">Why choose LocalConnect</h2><p>Everything you need to book local help with confidence.</p></div>
+            <div class="benefit-grid">
+                <div><span>✓</span><strong>Verified professionals</strong><p>Background-checked service partners.</p></div>
+                <div><span>₹</span><strong>Transparent pricing</strong><p>Clear estimates before you book.</p></div>
+                <div><span>⌖</span><strong>Live location tracking</strong><p>Know when your professional arrives.</p></div>
+                <div><span>🔒</span><strong>Secure payments</strong><p>Protected, convenient transactions.</p></div>
+                <div><span>★</span><strong>Service warranty</strong><p>Support if something is not right.</p></div>
+                <div><span>?</span><strong>Customer support</strong><p>Friendly help throughout your booking.</p></div>
+            </div>
+        </section>
+
+        <section class="content-section page-container" id="messages" aria-labelledby="reviews-heading">
+            <div class="section-heading centered"><div><span class="section-kicker">Customer stories</span><h2 id="reviews-heading">Trusted by households in Davangere</h2></div></div>
+            <div class="review-grid">
+                <article><div class="review-stars">★★★★★</div><p>“The plumber arrived on time, explained the repair clearly and finished without leaving a mess.”</p><strong>Ananya Rao</strong><small>Booked plumbing</small></article>
+                <article><div class="review-stars">★★★★★</div><p>“Booking an electrician took only a few minutes. The pricing was clear and the work felt very professional.”</p><strong>Prakash S.</strong><small>Booked electrical service</small></article>
+                <article><div class="review-stars">★★★★★</div><p>“I could compare ratings before choosing. The cleaning team was polite, careful and thorough.”</p><strong>Megha Patil</strong><small>Booked home cleaning</small></article>
+            </div>
+        </section>
+
+        <section class="final-cta page-container" aria-labelledby="cta-heading">
+            <div><span class="section-kicker">Local help, made simple</span><h2 id="cta-heading">Need help today?</h2><p>Book a trusted professional near you in just a few minutes.</p></div>
+            <div><a class="primary-button large" href="#categories">Find a Service</a><a class="secondary-button large" href="#">Become a Professional</a></div>
+        </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Mobile navigation">
+        <a class="active" href="home.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Home</span></a>
+        <a href="#messages"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.7-5A8 8 0 1 1 21 15Z"/></svg><span>Chats</span><i>2</i></a>
+        <a class="provider-action" href="#"><b>＋</b><span>Provider</span></a>
+        <a href="index.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
+    </nav>
+
+    <script src="home.js"></script>
+    <script src="premium-card.js"></script>
+</body>
+</html>

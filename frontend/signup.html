@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a new account with your email">
+    <title>Create account</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="auth-shell signup-shell">
+        <aside class="visual-panel signup-visual">
+            <div class="visual-glow glow-one"></div>
+            <div class="visual-glow glow-two"></div>
+            <a class="logo-lockup" href="index.html" aria-label="Aster home">
+                <span class="logo-mark">A</span>
+                <span>Aster</span>
+            </a>
+            <div class="visual-copy">
+                <span class="eyebrow">Join the community</span>
+                <h2>Start something<br>remarkable today.</h2>
+                <p>Create your free account and bring your best work together in one focused space.</p>
+                <div class="service-carousel" data-service-carousel aria-label="Online booking services">
+                    <button class="carousel-arrow carousel-prev" type="button" aria-label="Previous service">‹</button>
+                    <div class="carousel-stage">
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/plumber.png" alt="Professional plumber repairing a kitchen sink">
+                        <figcaption>
+                            <span class="slide-category">Home repair</span>
+                            <strong>Expert plumbing</strong>
+                            <p>Quick help for leaks, taps, pipes, and installations.</p>
+                            <a href="home.html?service=plumber">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/electrician.png" alt="Professional electrician inspecting a home panel">
+                        <figcaption>
+                            <span class="slide-category">Electrical</span>
+                            <strong>Trusted electricians</strong>
+                            <p>Safe repairs, wiring, fixtures, and home inspections.</p>
+                            <a href="home.html?service=electrician">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/cleaning.png" alt="Professional home cleaner cleaning a living room">
+                        <figcaption>
+                            <span class="slide-category">Home care</span>
+                            <strong>Professional cleaning</strong>
+                            <p>Fresh, detailed cleaning from trusted local professionals.</p>
+                            <a href="home.html?service=cleaning">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/ac-repair.png" alt="Professional technician servicing a home air conditioner">
+                        <figcaption>
+                            <span class="slide-category">Cooling service</span>
+                            <strong>AC repair</strong>
+                            <p>Installation, servicing, gas refill, and cooling repairs.</p>
+                            <a href="home.html?service=ac-repair">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/car-mechanic.png" alt="Professional mechanic inspecting a car">
+                        <figcaption>
+                            <span class="slide-category">Auto care</span>
+                            <strong>Car mechanic</strong>
+                            <p>Diagnostics, regular service, repairs, and roadside help.</p>
+                            <a href="home.html?service=car-mechanic">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/bike-mechanic.png" alt="Professional mechanic servicing a motorcycle">
+                        <figcaption>
+                            <span class="slide-category">Two-wheeler care</span>
+                            <strong>Bike mechanic</strong>
+                            <p>Bike servicing, engine checks, punctures, and repairs.</p>
+                            <a href="home.html?service=bike-mechanic">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    </div>
+                    <button class="carousel-arrow carousel-next" type="button" aria-label="Next service">›</button>
+                    <div class="carousel-dots" aria-label="Choose a service"></div>
+                </div>
+                <div class="booking-marquee" aria-label="Other available booking services">
+                    <div><span>Builders</span><i>•</i><span>Transport</span><i>•</i><span>Car repair</span><i>•</i><span>Painting</span><i>•</i><span>Carpentry</span><i>•</i><span>Appliance repair</span></div>
+                </div>
+                <ul class="benefit-list">
+                    <li><span>✓</span> Fast email verification</li>
+                    <li><span>✓</span> Protected account access</li>
+                    <li><span>✓</span> Simple, distraction-free workspace</li>
+                </ul>
+            </div>
+            <div class="quote-card">
+                <p>“A calmer, smarter way to get work done.”</p>
+                <span>— Aster community</span>
+            </div>
+        </aside>
+        <section class="form-panel">
+        <div class="mobile-brand"><span class="logo-mark">A</span><strong>Aster</strong></div>
+        <div class="form-heading">
+        <span class="eyebrow dark">Get started</span>
+        <h1>Create your account</h1>
+        <p class="intro" id="step-description">Verify your email before creating your account.</p>
+        </div>
+
+        <form id="signup-form" novalidate>
+            <div id="email-step">
+                <div class="step-label">Step 1 of 2</div>
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="inline-field">
+                        <input type="email" id="email" name="email" placeholder="you@example.com"
+                               autocomplete="email" required>
+                        <button class="secondary-button" id="send-otp" type="button">Send OTP</button>
+                    </div>
+                    <small class="error" id="email-error"></small>
+                </div>
+
+                <div class="form-group hidden" id="otp-group">
+                    <label for="otp">Enter the 6-digit OTP</label>
+                    <input class="otp-input" type="text" id="otp" name="otp" placeholder="000000"
+                           inputmode="numeric" autocomplete="one-time-code" maxlength="6">
+                    <small class="field-hint">The code expires in 10 minutes.</small>
+                    <small class="error" id="otp-error"></small>
+                    <button class="primary-button" id="verify-otp" type="button">Verify email</button>
+                    <button class="text-button" id="resend-otp" type="button">Resend OTP</button>
+                </div>
+            </div>
+
+            <div class="hidden" id="account-step">
+                <div class="verified-email">
+                    <span>✓ Email verified</span>
+                    <strong id="verified-email-address"></strong>
+                </div>
+                <div class="step-label">Step 2 of 2</div>
+
+                <div class="form-group">
+                <label for="name">Full name</label>
+                <input type="text" id="name" name="name" placeholder="Your full name"
+                       autocomplete="name" minlength="2" required>
+                <small class="error" id="name-error"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" placeholder="At least 6 characters"
+                               autocomplete="new-password" minlength="6" required>
+                        <button class="toggle-password" type="button" aria-label="Show password"
+                                data-target="password">Show</button>
+                    </div>
+                    <small class="error" id="password-error"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm password</label>
+                    <div class="password-field">
+                        <input type="password" id="confirm-password" name="confirmPassword"
+                               placeholder="Enter your password again" autocomplete="new-password" required>
+                        <button class="toggle-password" type="button" aria-label="Show password"
+                                data-target="confirm-password">Show</button>
+                    </div>
+                    <small class="error" id="confirm-password-error"></small>
+                </div>
+
+                <label class="remember">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <span>I agree to the terms and privacy policy</span>
+                </label>
+                <small class="error standalone" id="terms-error"></small>
+
+                <button class="primary-button" type="submit">Create account</button>
+            </div>
+            <p class="form-message" id="form-message" role="status"></p>
+        </form>
+
+        <p class="secondary">Already have an account? <a href="index.html">Sign in</a></p>
+        <p class="legal-copy">Your information is protected with industry-standard security.</p>
+        </section>
+    </main>
+    <script src="auth.js"></script>
+</body>
+</html>

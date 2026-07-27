@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign in to your account">
+    <title>Sign in</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="auth-shell">
+        <aside class="visual-panel">
+            <div class="visual-glow glow-one"></div>
+            <div class="visual-glow glow-two"></div>
+            <a class="logo-lockup" href="index.html" aria-label="Aster home">
+                <span class="logo-mark">A</span>
+                <span>Aster</span>
+            </a>
+            <div class="visual-copy">
+                <span class="eyebrow">Your digital workspace</span>
+                <h2>Everything you need,<br>in one beautiful place.</h2>
+                <p>Securely access your projects, conversations, and ideas from anywhere.</p>
+                <div class="service-carousel" data-service-carousel aria-label="Online booking services">
+                    <button class="carousel-arrow carousel-prev" type="button" aria-label="Previous service">‹</button>
+                    <div class="carousel-stage">
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/plumber.png" alt="Professional plumber repairing a kitchen sink">
+                        <figcaption>
+                            <span class="slide-category">Home repair</span>
+                            <strong>Expert plumbing</strong>
+                            <p>Quick help for leaks, taps, pipes, and installations.</p>
+                            <a href="home.html?service=plumber">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/electrician.png" alt="Professional electrician inspecting a home panel">
+                        <figcaption>
+                            <span class="slide-category">Electrical</span>
+                            <strong>Trusted electricians</strong>
+                            <p>Safe repairs, wiring, fixtures, and home inspections.</p>
+                            <a href="home.html?service=electrician">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/cleaning.png" alt="Professional home cleaner cleaning a living room">
+                        <figcaption>
+                            <span class="slide-category">Home care</span>
+                            <strong>Professional cleaning</strong>
+                            <p>Fresh, detailed cleaning from trusted local professionals.</p>
+                            <a href="home.html?service=cleaning">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/ac-repair.png" alt="Professional technician servicing a home air conditioner">
+                        <figcaption>
+                            <span class="slide-category">Cooling service</span>
+                            <strong>AC repair</strong>
+                            <p>Installation, servicing, gas refill, and cooling repairs.</p>
+                            <a href="home.html?service=ac-repair">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/car-mechanic.png" alt="Professional mechanic inspecting a car">
+                        <figcaption>
+                            <span class="slide-category">Auto care</span>
+                            <strong>Car mechanic</strong>
+                            <p>Diagnostics, regular service, repairs, and roadside help.</p>
+                            <a href="home.html?service=car-mechanic">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    <figure class="service-photo" data-slide>
+                        <img src="assets/services/bike-mechanic.png" alt="Professional mechanic servicing a motorcycle">
+                        <figcaption>
+                            <span class="slide-category">Two-wheeler care</span>
+                            <strong>Bike mechanic</strong>
+                            <p>Bike servicing, engine checks, punctures, and repairs.</p>
+                            <a href="home.html?service=bike-mechanic">Book now <span>→</span></a>
+                        </figcaption>
+                    </figure>
+                    </div>
+                    <button class="carousel-arrow carousel-next" type="button" aria-label="Next service">›</button>
+                    <div class="carousel-dots" aria-label="Choose a service"></div>
+                </div>
+                <div class="booking-marquee" aria-label="Other available booking services">
+                    <div><span>Builders</span><i>•</i><span>Transport</span><i>•</i><span>Car repair</span><i>•</i><span>Painting</span><i>•</i><span>Carpentry</span><i>•</i><span>Appliance repair</span></div>
+                </div>
+                <div class="trust-row">
+                    <div class="avatar-stack" aria-hidden="true">
+                        <span>AM</span><span>RK</span><span>JL</span>
+                    </div>
+                    <p><strong>10,000+</strong> people already joined</p>
+                </div>
+            </div>
+            <div class="security-pill"><span>✓</span> Secure &amp; encrypted</div>
+        </aside>
+        <section class="form-panel">
+        <div class="mobile-brand"><span class="logo-mark">A</span><strong>Aster</strong></div>
+        <div class="form-heading">
+        <span class="eyebrow dark">Welcome back</span>
+        <h1>Welcome back</h1>
+        <p class="intro">Sign in with your email to continue to your account.</p>
+        </div>
+
+        <form id="login-form" novalidate>
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" id="email" name="email" placeholder="you@example.com"
+                       autocomplete="email" required>
+                <small class="error" id="email-error"></small>
+            </div>
+
+            <div class="form-group">
+                <div class="label-row">
+                    <label for="password">Password</label>
+                    <a href="#" class="small-link">Forgot password?</a>
+                </div>
+                <div class="password-field">
+                    <input type="password" id="password" name="password" placeholder="Enter your password"
+                           autocomplete="current-password" minlength="6" required>
+                    <button class="toggle-password" type="button" aria-label="Show password"
+                            data-target="password">Show</button>
+                </div>
+                <small class="error" id="password-error"></small>
+            </div>
+
+            <label class="remember">
+                <input type="checkbox" name="remember">
+                <span>Remember me</span>
+            </label>
+
+            <button class="primary-button" type="submit">Sign in</button>
+            <p class="form-message" id="form-message" role="status"></p>
+        </form>
+
+        <p class="secondary">Don’t have an account? <a href="signup.html">Create account</a></p>
+        <p class="legal-copy">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+        </section>
+    </main>
+    <script src="auth.js"></script>
+</body>
+</html>
