@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your LocalConnect profile, addresses and bookings">
+    <title>My account — LocalConnect</title>
+    <link rel="stylesheet" href="customer-dashboard.css">
+</head>
+<body>
+    <header class="account-header">
+        <div class="header-inner">
+            <a class="brand" href="home.html"><span class="brand-mark">L</span><span>Local<strong>Connect</strong></span></a>
+            <a class="back-home" href="home.html">← Back to services</a>
+            <button class="header-logout" type="button" data-logout>Log out</button>
+        </div>
+    </header>
+
+    <div class="account-layout">
+        <aside class="account-sidebar">
+            <div class="account-identity">
+                <span class="avatar" id="sidebar-avatar">U</span>
+                <div><strong id="sidebar-name">Customer</strong><small id="sidebar-email">Complete your profile</small></div>
+            </div>
+            <nav class="account-nav" aria-label="Customer account">
+                <button class="active" data-view="overview"><span>⌂</span>Overview</button>
+                <button data-view="profile"><span>♙</span>My profile</button>
+                <button data-view="addresses"><span>⌖</span>Saved addresses</button>
+                <button data-view="active-bookings"><span>◷</span>Active bookings <b id="active-count">0</b></button>
+                <button data-view="history"><span>✓</span>Booking history</button>
+                <button data-view="favourites"><span>♡</span>Favourites</button>
+                <button data-view="settings"><span>⚙</span>Settings</button>
+            </nav>
+            <button class="sidebar-logout" type="button" data-logout>↪ Log out</button>
+        </aside>
+
+        <main class="account-content">
+            <section class="account-view active" data-panel="overview">
+                <div class="page-heading"><div><span class="eyebrow">My account</span><h1>Welcome back, <span id="welcome-name">Customer</span></h1><p>Manage your services and account from one place.</p></div><a class="primary-button" href="home.html#categories">Book a service</a></div>
+                <div class="summary-grid">
+                    <button data-view-link="active-bookings"><span class="summary-icon purple">◷</span><small>Active bookings</small><strong id="summary-active">0</strong><em>View bookings →</em></button>
+                    <button data-view-link="history"><span class="summary-icon green">✓</span><small>Completed services</small><strong id="summary-completed">0</strong><em>View history →</em></button>
+                    <button data-view-link="favourites"><span class="summary-icon pink">♥</span><small>Saved professionals</small><strong id="summary-favourites">0</strong><em>View favourites →</em></button>
+                    <button data-view-link="addresses"><span class="summary-icon orange">⌖</span><small>Saved addresses</small><strong id="summary-addresses">0</strong><em>Manage addresses →</em></button>
+                </div>
+                <div class="dashboard-grid">
+                    <section class="content-card"><div class="card-heading"><div><span class="eyebrow">In progress</span><h2>Latest booking</h2></div><button class="text-button" data-view-link="active-bookings">View all</button></div><div id="overview-booking"></div></section>
+                    <section class="content-card quick-actions"><div class="card-heading"><div><span class="eyebrow">Shortcuts</span><h2>Quick actions</h2></div></div><button data-view-link="profile">Edit profile <span>→</span></button><button data-view-link="addresses">Add an address <span>→</span></button><a href="home.html#categories">Find a professional <span>→</span></a><button data-view-link="settings">Account settings <span>→</span></button></section>
+                </div>
+            </section>
+
+            <section class="account-view" data-panel="profile" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Personal information</span><h1>My profile</h1><p>Keep your contact details up to date.</p></div></div>
+                <form class="content-card profile-form" id="profile-form">
+                    <div class="profile-photo-row"><span class="avatar large" id="profile-avatar">U</span><div><strong>Profile photo</strong><small>Your initials are used until photo uploads are available.</small></div></div>
+                    <div class="form-grid"><label>Full name<input name="name" minlength="2" required autocomplete="name"></label><label>Email address<input name="email" type="email" required autocomplete="email"></label><label>Phone number<input name="phone" inputmode="tel" pattern="[0-9 +()-]{7,18}" autocomplete="tel" placeholder="+91 98765 43210"></label><label>Date of birth<input name="dateOfBirth" type="date"></label></div>
+                    <label>Preferred language<select name="language"><option>English</option><option>Kannada</option><option>Hindi</option></select></label>
+                    <div class="form-actions"><button class="secondary-button" type="reset">Discard changes</button><button class="primary-button" type="submit">Save profile</button></div>
+                    <p class="form-message" id="profile-message" role="status"></p>
+                </form>
+            </section>
+
+            <section class="account-view" data-panel="addresses" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Service locations</span><h1>Saved addresses</h1><p>Choose where professionals should arrive.</p></div><button class="primary-button" id="add-address" type="button">+ Add address</button></div>
+                <div class="address-grid" id="address-list"></div>
+            </section>
+
+            <section class="account-view" data-panel="active-bookings" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Services in progress</span><h1>Active bookings</h1><p>Track, reschedule or cancel upcoming services.</p></div><a class="primary-button" href="home.html#categories">Book another service</a></div>
+                <div class="booking-list" id="active-booking-list"></div>
+            </section>
+
+            <section class="account-view" data-panel="history" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Past services</span><h1>Booking history</h1><p>Review completed and cancelled bookings.</p></div></div>
+                <div class="history-toolbar"><label class="search-field">⌕ <input id="history-search" type="search" placeholder="Search bookings"></label><select id="history-filter" aria-label="Filter booking history"><option value="all">All statuses</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
+                <div class="booking-list" id="history-list"></div>
+            </section>
+
+            <section class="account-view" data-panel="favourites" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Saved for later</span><h1>Favourite professionals</h1><p>Quickly book professionals you trust.</p></div><a class="primary-button" href="home.html#service-professionals">Find professionals</a></div>
+                <div class="favourite-grid" id="favourite-list"></div>
+            </section>
+
+            <section class="account-view" data-panel="settings" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Preferences and security</span><h1>Account settings</h1><p>Control notifications, appearance and account access.</p></div></div>
+                <form class="settings-grid" id="settings-form">
+                    <section class="content-card"><h2>Notifications</h2><label class="setting-toggle"><span><strong>Booking updates</strong><small>Status and arrival notifications</small></span><input name="bookingUpdates" type="checkbox"><i></i></label><label class="setting-toggle"><span><strong>Offers and recommendations</strong><small>Occasional LocalConnect promotions</small></span><input name="offers" type="checkbox"><i></i></label><label class="setting-toggle"><span><strong>Email receipts</strong><small>Receive payment and booking receipts</small></span><input name="emailReceipts" type="checkbox"><i></i></label></section>
+                    <section class="content-card"><h2>Appearance</h2><label>Theme<select name="theme"><option value="system">Use device setting</option><option value="light">Light</option><option value="night">Night</option></select></label><label>Default booking reminder<select name="reminder"><option value="30">30 minutes before</option><option value="60">1 hour before</option><option value="1440">1 day before</option></select></label></section>
+                    <section class="content-card danger-card"><h2>Account access</h2><p>Log out on this device or remove locally stored account information.</p><div><button class="secondary-button" type="button" data-logout>Log out</button><button class="danger-button" id="delete-local-data" type="button">Delete local account data</button></div></section>
+                    <div class="settings-actions"><button class="primary-button" type="submit">Save settings</button><p class="form-message" id="settings-message" role="status"></p></div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <dialog id="address-dialog"><form method="dialog" class="dialog-card" id="address-form"><div class="dialog-heading"><div><span class="eyebrow">Service location</span><h2 id="address-dialog-title">Add address</h2></div><button value="cancel" aria-label="Close">×</button></div><input name="id" type="hidden"><div class="form-grid"><label>Label<select name="label"><option>Home</option><option>Work</option><option>Other</option></select></label><label>Recipient name<input name="customerName" required autocomplete="name"></label><label class="full">Street address<input name="street" required autocomplete="street-address"></label><label>Area or locality<input name="area" required></label><label>City<input name="city" required></label><label>State<input name="state" required></label><label>PIN code<input name="pin" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6"></label><label class="full">Landmark <span>(optional)</span><input name="landmark"></label></div><div class="form-actions"><button class="secondary-button" value="cancel">Cancel</button><button class="primary-button" id="save-address" type="submit" value="default">Save address</button></div></form></dialog>
+
+    <dialog id="booking-dialog"><div class="dialog-card booking-detail"><div class="dialog-heading"><div><span class="eyebrow">Booking details</span><h2 id="booking-detail-title">Booking</h2></div><button id="close-booking" type="button" aria-label="Close">×</button></div><div id="booking-detail-content"></div></div></dialog>
+
+    <dialog id="reschedule-dialog"><form method="dialog" class="dialog-card" id="reschedule-form"><div class="dialog-heading"><div><span class="eyebrow">Change appointment</span><h2>Reschedule booking</h2></div><button value="cancel" aria-label="Close">×</button></div><input name="bookingId" type="hidden"><div class="form-grid"><label>New date<input name="date" type="date" required></label><label>New arrival window<select name="time" required><option value="">Select a time</option><option>09:00 AM – 11:00 AM</option><option>11:00 AM – 01:00 PM</option><option>02:00 PM – 04:00 PM</option><option>04:00 PM – 06:00 PM</option></select></label></div><div class="form-actions"><button class="secondary-button" value="cancel">Keep current time</button><button class="primary-button" type="submit" value="default">Confirm new time</button></div></form></dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="customer-dashboard.js"></script>
+</body>
+</html>

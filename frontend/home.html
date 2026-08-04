@@ -50,52 +50,13 @@
             <a class="active" href="home.html">Home</a>
             <a href="#categories">Services</a>
             <a href="#messages">Messages</a>
-            <a href="#recommended">Favourites</a>
-            <a href="index.html">Profile</a>
+            <a href="customer-dashboard.html#favourites">Favourites</a>
+            <a href="customer-dashboard.html" id="desktop-profile-link">Profile</a>
         </nav>
     </header>
 
-    <dialog class="location-dialog" id="location-dialog" aria-labelledby="location-dialog-title">
-        <div class="location-dialog-header">
-            <div>
-                <span class="section-kicker">Your position</span>
-                <h2 id="location-dialog-title">Live location</h2>
-            </div>
-            <button class="location-close" id="location-close" type="button" aria-label="Close location map">&times;</button>
-        </div>
-        <form class="location-search" id="location-search">
-            <label class="sr-only" for="location-search-input">Search a place in Google Maps</label>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-            <input id="location-search-input" type="search" placeholder="Search area, street or landmark" autocomplete="off">
-            <button type="submit">Search</button>
-        </form>
-        <div class="location-search-results" id="location-search-results" role="listbox" aria-label="Address search results" hidden></div>
-        <div class="live-map-wrap">
-            <iframe id="live-location-map" title="Your live location on Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen hidden></iframe>
-            <div class="location-placeholder" id="location-placeholder">
-                <span class="location-spinner" aria-hidden="true"></span>
-                <strong>Finding your location…</strong>
-                <small>Please allow location access when your browser asks.</small>
-            </div>
-        </div>
-        <div class="location-name" id="location-name" hidden>
-            <small>Current area</small>
-            <strong id="location-name-text">Finding area name…</strong>
-            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Area data © OpenStreetMap contributors</a>
-        </div>
-        <p class="location-status" id="location-status" role="status" aria-live="polite">Waiting for location permission.</p>
-        <p class="location-tip" id="location-tip" hidden></p>
-        <div class="location-details" id="location-details" hidden>
-            <span><small>Latitude</small><strong id="live-latitude">—</strong></span>
-            <span><small>Longitude</small><strong id="live-longitude">—</strong></span>
-            <span><small>Accuracy</small><strong id="live-accuracy">—</strong></span>
-        </div>
-        <div class="location-actions">
-            <button class="secondary-button" id="location-retry" type="button">Use my current location</button>
-            <a class="primary-button" id="location-maps-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Open in Google Maps</a>
-            <button class="primary-button" id="location-done" type="button">Done</button>
-        </div>
-    </dialog>
+    <div data-component="location" aria-live="polite"></div>
+
 
     <dialog class="service-profile-dialog" id="service-profile-dialog" aria-labelledby="service-profile-name">
         <button class="service-profile-close" id="service-profile-close" type="button" aria-label="Close service profile">&times;</button>
@@ -410,10 +371,9 @@
         <a class="active" href="home.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Home</span></a>
         <a href="#messages"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.7-5A8 8 0 1 1 21 15Z"/></svg><span>Chats</span><i>2</i></a>
         <a class="provider-action" href="#"><b>＋</b><span>Provider</span></a>
-        <a href="index.html" id="mobile-profile-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
+        <a href="customer-dashboard.html" id="mobile-profile-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
     </nav>
 
-    <script src="home.js"></script>
-    <script src="premium-card.js"></script>
+    <script type="module" src="component-loader.js"></script>
 </body>
 </html>
