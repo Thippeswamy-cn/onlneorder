@@ -48,9 +48,9 @@
 
         <nav class="desktop-nav page-container" aria-label="Primary navigation">
             <a class="active" href="home.html">Home</a>
-            <a href="#recommended">Bookings</a>
+            <a href="#categories">Services</a>
             <a href="#messages">Messages</a>
-            <a href="#recommended">Favourites</a>
+            <a href="#categories">Favourites</a>
             <a href="index.html">Profile</a>
         </nav>
     </header>
@@ -97,6 +97,157 @@
         </div>
     </dialog>
 
+    <dialog class="service-profile-dialog" id="service-profile-dialog" aria-labelledby="service-profile-name">
+        <button class="service-profile-close" id="service-profile-close" type="button" aria-label="Close service profile">&times;</button>
+        <div class="service-profile-hero">
+            <img id="service-profile-image" src="" alt="">
+            <div>
+                <span class="service-profile-type" id="service-profile-type"></span>
+                <h2 id="service-profile-name"></h2>
+                <p id="service-profile-speciality"></p>
+                <div class="service-profile-trust">
+                    <span id="service-profile-rating"></span>
+                    <span id="service-profile-distance"></span>
+                    <span class="available"><i></i><b id="service-profile-availability"></b></span>
+                </div>
+            </div>
+        </div>
+        <div class="service-profile-body">
+            <section>
+                <span class="section-kicker">About this professional</span>
+                <p class="service-profile-about" id="service-profile-about"></p>
+                <div class="service-profile-facts" id="service-profile-facts"></div>
+            </section>
+            <section>
+                <div class="service-profile-section-heading">
+                    <div><span class="section-kicker">Transparent pricing</span><h3>Services &amp; prices</h3></div>
+                    <small>Final price may vary after inspection</small>
+                </div>
+                <div class="service-price-list" id="service-price-list"></div>
+            </section>
+            <section>
+                <span class="section-kicker">Included with every booking</span>
+                <ul class="service-inclusions" id="service-profile-inclusions"></ul>
+            </section>
+        </div>
+        <div class="service-profile-footer">
+            <div><small>Starting from</small><strong id="service-profile-starting-price"></strong></div>
+            <button class="primary-button large" id="service-profile-book" type="button">Book this professional</button>
+        </div>
+    </dialog>
+
+    <dialog class="booking-step-dialog" id="booking-step-dialog" aria-labelledby="booking-step-title">
+        <div class="booking-step-header">
+            <div>
+                <span class="section-kicker">Start your booking</span>
+                <h2 id="booking-step-title">Choose the service you need</h2>
+            </div>
+            <button class="service-profile-close" id="booking-step-close" type="button" aria-label="Close booking">&times;</button>
+        </div>
+        <ol class="booking-progress" aria-label="Booking progress">
+            <li class="active"><span>1</span><b>Service</b></li>
+            <li><span>2</span><b>Schedule</b></li>
+            <li><span>3</span><b>Address</b></li>
+            <li><span>4</span><b>Confirm</b></li>
+        </ol>
+        <form id="booking-service-form">
+            <div class="booking-provider-summary">
+                <img id="booking-provider-image" src="" alt="">
+                <div><small id="booking-service-type"></small><strong id="booking-provider-name"></strong><span id="booking-provider-rating"></span></div>
+            </div>
+            <fieldset class="booking-service-options">
+                <legend>Select one service</legend>
+                <div id="booking-service-options"></div>
+            </fieldset>
+            <label class="booking-notes">
+                <span>Describe the problem <small>(optional)</small></span>
+                <textarea id="booking-service-notes" rows="3" maxlength="300" placeholder="For example: kitchen tap is leaking continuously"></textarea>
+                <small><b id="booking-notes-count">0</b>/300</small>
+            </label>
+            <label class="booking-urgent">
+                <input id="booking-urgent" type="checkbox">
+                <span><strong>I need urgent service</strong><small>Show the earliest available time in the next step</small></span>
+            </label>
+            <div class="booking-step-total">
+                <span><small>Estimated service price</small><strong id="booking-step-price">Select a service</strong></span>
+                <small>Parts and extra work are confirmed separately</small>
+            </div>
+            <button class="primary-button large booking-continue" id="booking-step-continue" type="submit" disabled>Continue to schedule <span>→</span></button>
+            <p class="booking-step-message" id="booking-step-message" role="status" hidden></p>
+        </form>
+        <form class="booking-panel" id="booking-schedule-form" hidden>
+            <h3>When should the professional arrive?</h3>
+            <p class="booking-panel-intro">Choose an available date and arrival window.</p>
+            <fieldset><legend>Select a date</legend><div class="booking-date-grid" id="booking-date-options"></div></fieldset>
+            <fieldset><legend>Select a time</legend><div class="booking-time-grid" id="booking-time-options">
+                <label><input type="radio" name="booking-time" value="09:00 AM – 11:00 AM" required><span>09:00 AM<small>– 11:00 AM</small></span></label>
+                <label><input type="radio" name="booking-time" value="11:00 AM – 01:00 PM"><span>11:00 AM<small>– 01:00 PM</small></span></label>
+                <label><input type="radio" name="booking-time" value="02:00 PM – 04:00 PM"><span>02:00 PM<small>– 04:00 PM</small></span></label>
+                <label><input type="radio" name="booking-time" value="04:00 PM – 06:00 PM"><span>04:00 PM<small>– 06:00 PM</small></span></label>
+            </div></fieldset>
+            <div class="booking-navigation"><button class="secondary-button large" data-booking-back="1" type="button">Back</button><button class="primary-button large" type="submit">Continue to address →</button></div>
+        </form>
+        <form class="booking-panel" id="booking-address-form" hidden>
+            <h3>Where do you need the service?</h3>
+            <p class="booking-panel-intro">Enter the address where the professional should arrive.</p>
+            <div class="booking-address-grid">
+                <label class="wide"><span>Full name</span><input name="customerName" autocomplete="name" required placeholder="Your name"></label>
+                <label><span>Phone number</span><input name="phone" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" required placeholder="10-digit number"></label>
+                <label><span>Address label</span><select name="addressLabel"><option>Home</option><option>Work</option><option>Other</option></select></label>
+                <label class="wide"><span>House / flat and street</span><input name="street" required placeholder="House number, street or building"></label>
+                <label><span>Area</span><input name="area" required placeholder="Area or locality"></label>
+                <label><span>City</span><input name="city" required value="Davangere"></label>
+                <label><span>State</span><input name="state" required value="Karnataka"></label>
+                <label><span>PIN code</span><input name="pin" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" required placeholder="577001"></label>
+                <label class="wide"><span>Landmark <small>(optional)</small></span><input name="landmark" placeholder="Nearby landmark"></label>
+            </div>
+            <label class="booking-urgent"><input name="saveAddress" type="checkbox" checked><span><strong>Save this address on this device</strong><small>Use it for faster demo bookings later</small></span></label>
+            <div class="booking-navigation"><button class="secondary-button large" data-booking-back="2" type="button">Back</button><button class="primary-button large" type="submit">Review booking →</button></div>
+        </form>
+        <form class="booking-panel" id="booking-review-form" hidden>
+            <h3>Review and confirm</h3>
+            <p class="booking-panel-intro">Check the details before placing your demo booking.</p>
+            <div class="booking-review-card" id="booking-review-details"></div>
+            <fieldset class="booking-payment-options"><legend>Payment method</legend>
+                <label><input type="radio" name="payment" value="Pay after service" checked><span>₹<b>Pay after service</b><small>Cash or UPI after completion</small></span></label>
+                <label><input type="radio" name="payment" value="UPI"><span>U<b>UPI</b><small>Demo online payment</small></span></label>
+                <label><input type="radio" name="payment" value="Card"><span>▣<b>Card</b><small>Credit or debit card</small></span></label>
+            </fieldset>
+            <label class="booking-consent"><input type="checkbox" required><span>I agree to the cancellation policy and understand that parts or additional work require separate approval.</span></label>
+            <div class="booking-navigation"><button class="secondary-button large" data-booking-back="3" type="button">Back</button><button class="primary-button large" type="submit">Confirm demo booking</button></div>
+        </form>
+        <section class="booking-panel booking-success" id="booking-success-panel" hidden>
+            <span class="booking-success-icon">✓</span><span class="section-kicker">Booking confirmed</span>
+            <h3>Your service is scheduled</h3><p>A demo confirmation has been saved on this device.</p>
+            <div class="booking-receipt" id="booking-receipt"></div>
+            <div class="booking-help-row"><span><b>What happens next?</b><small>The professional reviews the request and contacts you before arrival.</small></span><span><b>Need help?</b><small>Use Messages or call customer support from your booking.</small></span></div>
+            <button class="primary-button large booking-continue" id="booking-finish" type="button">Done</button>
+        </section>
+    </dialog>
+
+    <dialog class="category-detail-dialog" id="category-detail-dialog" aria-labelledby="category-detail-title">
+        <button class="service-profile-close" id="category-detail-close" type="button" aria-label="Close service details">&times;</button>
+        <div class="category-detail-hero">
+            <span class="category-detail-icon" id="category-detail-icon"></span>
+            <div><span class="section-kicker">Service category</span><h2 id="category-detail-title"></h2><p id="category-detail-description"></p></div>
+        </div>
+        <div class="category-detail-body">
+            <section>
+                <div class="service-profile-section-heading">
+                    <div><span class="section-kicker">Choose what you need</span><h3>Available services</h3></div>
+                    <small>Prices shown are starting estimates</small>
+                </div>
+                <div class="service-price-list" id="category-service-list"></div>
+            </section>
+            <section>
+                <div class="service-profile-section-heading">
+                    <div><span class="section-kicker">Available near you</span><h3 id="category-provider-heading">Service professionals</h3></div>
+                </div>
+                <div class="category-provider-list" id="category-provider-list"></div>
+            </section>
+        </div>
+    </dialog>
+
     <main>
         <section class="hero page-container" aria-labelledby="hero-heading">
             <p class="eyebrow">Trusted services in Davangere</p>
@@ -127,24 +278,24 @@
         <section class="content-section page-container" id="categories" aria-labelledby="categories-heading">
             <div class="section-heading">
                 <div><span class="section-kicker">Explore services</span><h2 id="categories-heading">Popular categories</h2></div>
-                <a href="#">View all services</a>
+                <a id="view-all-services" href="#categories">View all services</a>
             </div>
             <div class="category-grid">
-                <a class="category-card" data-service="plumbing plumber pipe tap leak" href="home.html?service=plumbing"><span class="category-icon">🔧</span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
-                <a class="category-card" data-service="electrical electrician wiring light" href="home.html?service=electrical"><span class="category-icon">⚡</span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
-                <a class="category-card" data-service="cleaning cleaner housekeeping deep clean" href="home.html?service=cleaning"><span class="category-icon">✨</span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
-                <a class="category-card" data-service="vehicle repair car bike mechanic garage" href="home.html?service=vehicle-repair"><span class="category-icon">🚗</span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
-                <a class="category-card" data-service="appliance repair ac refrigerator fridge washer" href="home.html?service=appliance-repair"><span class="category-icon">🔌</span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
-                <a class="category-card" data-service="beauty salon haircut makeup spa" href="home.html?service=beauty"><span class="category-icon">✂️</span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
-                <a class="category-card" data-service="moving movers packing delivery shifting" href="home.html?service=moving"><span class="category-icon">📦</span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
-                <a class="category-card" data-service="emergency urgent help" href="home.html?service=emergency"><span class="category-icon">🛟</span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
+                <a class="category-card" data-service="plumbing plumber pipe tap leak" href="home.html?service=plumbing"><img class="category-photo" src="assets/services/plumber.png" alt="Professional plumbing service" loading="lazy"><span class="category-icon">🔧</span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
+                <a class="category-card" data-service="electrical electrician wiring light" href="home.html?service=electrical"><img class="category-photo" src="assets/services/electrician.png" alt="Professional electrical service" loading="lazy"><span class="category-icon">⚡</span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
+                <a class="category-card" data-service="cleaning cleaner housekeeping deep clean" href="home.html?service=cleaning"><img class="category-photo" src="assets/services/cleaning.png" alt="Professional home cleaning service" loading="lazy"><span class="category-icon">✨</span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
+                <a class="category-card" data-service="vehicle repair car bike mechanic garage" href="home.html?service=vehicle-repair"><img class="category-photo" src="assets/services/car-mechanic.png" alt="Professional vehicle repair service" loading="lazy"><span class="category-icon">🚗</span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
+                <a class="category-card" data-service="appliance repair ac refrigerator fridge washer" href="home.html?service=appliance-repair"><img class="category-photo" src="assets/services/ac-repair.png" alt="Professional appliance repair service" loading="lazy"><span class="category-icon">🔌</span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
+                <a class="category-card" data-service="beauty salon haircut makeup spa" href="home.html?service=beauty"><img class="category-photo" src="assets/services/beauty-service.png" alt="Professional at-home beauty service" loading="lazy"><span class="category-icon">✂️</span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
+                <a class="category-card" data-service="moving movers packing delivery shifting" href="home.html?service=moving"><img class="category-photo" src="assets/services/moving-service.png" alt="Professional moving service" loading="lazy"><span class="category-icon">📦</span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
+                <a class="category-card" data-service="emergency urgent help" href="home.html?service=emergency"><img class="category-photo" src="assets/services/emergency-service.png" alt="Professional emergency home service" loading="lazy"><span class="category-icon">🛟</span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
             </div>
         </section>
 
-        <section class="content-section page-container" id="recommended" aria-labelledby="recommended-heading">
+        <section class="content-section page-container" id="service-professionals" aria-labelledby="service-professionals-heading" hidden>
             <div class="section-heading">
-                <div><span class="section-kicker">Top rated nearby</span><h2 id="recommended-heading">Recommended professionals near you</h2></div>
-                <button class="text-button" type="button">See all</button>
+                <div><span class="section-kicker" id="provider-section-kicker">Browse by service</span><h2 id="service-professionals-heading">All service professionals</h2></div>
+                <button class="text-button" id="show-all-providers" type="button">Show all</button>
             </div>
             <div class="professional-list" id="provider-list">
                 <article class="professional-card provider-card" data-service="plumber plumbing">
@@ -152,7 +303,7 @@
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Sri Sai Plumbing Works <span class="verified" aria-label="Verified professional">✓</span></h3><p>Plumbing specialist</p></div><button class="bookmark" type="button" aria-label="Save Sri Sai Plumbing Works">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.8 <small>(126 reviews)</small></span><span>2.1 km away</span><span class="available"><i></i> Available today</span></div>
-                        <div class="professional-footer"><strong>From ₹299</strong><div><a class="secondary-button" href="#">View Profile</a><a class="primary-button" href="home.html?service=plumber">Book Now</a></div></div>
+                        <div class="professional-footer"><strong>From ₹299</strong><div><a class="secondary-button view-profile" href="#" data-provider="sri-sai">View Profile</a><a class="primary-button" href="home.html?service=plumber">Book Now</a></div></div>
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="car vehicle mechanic repair">
@@ -160,7 +311,7 @@
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>RK Motors &amp; Service <span class="verified" aria-label="Verified professional">✓</span></h3><p>Car and bike mechanic</p></div><button class="bookmark" type="button" aria-label="Save RK Motors and Service">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.7 <small>(89 reviews)</small></span><span>4.5 km away</span><span class="available"><i></i> Available today</span></div>
-                        <div class="professional-footer"><strong>From ₹499</strong><div><a class="secondary-button" href="#">View Profile</a><a class="primary-button" href="home.html?service=car-mechanic">Book Now</a></div></div>
+                        <div class="professional-footer"><strong>From ₹499</strong><div><a class="secondary-button view-profile" href="#" data-provider="rk-motors">View Profile</a><a class="primary-button" href="home.html?service=car-mechanic">Book Now</a></div></div>
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="electrician electrical">
@@ -168,7 +319,47 @@
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Davangere Electricals <span class="verified" aria-label="Verified professional">✓</span></h3><p>Certified electrician</p></div><button class="bookmark" type="button" aria-label="Save Davangere Electricals">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.9 <small>(74 reviews)</small></span><span>3.2 km away</span><span class="available"><i></i> Available now</span></div>
-                        <div class="professional-footer"><strong>From ₹349</strong><div><a class="secondary-button" href="#">View Profile</a><a class="primary-button" href="home.html?service=electrician">Book Now</a></div></div>
+                        <div class="professional-footer"><strong>From ₹349</strong><div><a class="secondary-button view-profile" href="#" data-provider="davangere-electricals">View Profile</a><a class="primary-button" href="home.html?service=electrician">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="cleaning cleaner housekeeping deep clean">
+                    <img src="assets/services/cleaning.png" alt="Sparkle Home Care cleaning professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>Sparkle Home Care <span class="verified" aria-label="Verified professional">✓</span></h3><p>Home cleaning specialists</p></div><button class="bookmark" type="button" aria-label="Save Sparkle Home Care">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.8 <small>(112 reviews)</small></span><span>2.8 km away</span><span class="available"><i></i> Available today</span></div>
+                        <div class="professional-footer"><strong>From ₹399</strong><div><a class="secondary-button view-profile" href="#" data-provider="sparkle-home-care">View Profile</a><a class="primary-button" href="home.html?service=cleaning">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="appliance repair ac refrigerator fridge washer">
+                    <img src="assets/services/ac-repair.png" alt="CoolTech appliance repair professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>CoolTech Appliance Care <span class="verified" aria-label="Verified professional">✓</span></h3><p>AC and appliance technician</p></div><button class="bookmark" type="button" aria-label="Save CoolTech Appliance Care">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.7 <small>(96 reviews)</small></span><span>3.7 km away</span><span class="available"><i></i> Available today</span></div>
+                        <div class="professional-footer"><strong>From ₹399</strong><div><a class="secondary-button view-profile" href="#" data-provider="cooltech">View Profile</a><a class="primary-button" href="home.html?service=appliance-repair">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="beauty salon haircut makeup spa">
+                    <img src="assets/services/cleaning.png" alt="Glow at Home beauty professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>Glow at Home <span class="verified" aria-label="Verified professional">✓</span></h3><p>Salon and beauty services</p></div><button class="bookmark" type="button" aria-label="Save Glow at Home">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.9 <small>(138 reviews)</small></span><span>2.5 km away</span><span class="available"><i></i> Available tomorrow</span></div>
+                        <div class="professional-footer"><strong>From ₹499</strong><div><a class="secondary-button view-profile" href="#" data-provider="glow-at-home">View Profile</a><a class="primary-button" href="home.html?service=beauty">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="moving movers packing delivery shifting transport">
+                    <img src="assets/services/car-mechanic.png" alt="SafeMove local moving service" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>SafeMove Packers <span class="verified" aria-label="Verified professional">✓</span></h3><p>Packing and local moving</p></div><button class="bookmark" type="button" aria-label="Save SafeMove Packers">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.6 <small>(67 reviews)</small></span><span>5.1 km away</span><span class="available"><i></i> Available tomorrow</span></div>
+                        <div class="professional-footer"><strong>From ₹999</strong><div><a class="secondary-button view-profile" href="#" data-provider="safemove">View Profile</a><a class="primary-button" href="home.html?service=moving">Book Now</a></div></div>
+                    </div>
+                </article>
+                <article class="professional-card provider-card" data-service="emergency urgent help plumbing electrical roadside">
+                    <img src="assets/services/plumber.png" alt="Rapid Help emergency service professional" loading="lazy">
+                    <div class="professional-main">
+                        <div class="professional-title"><div><h3>Rapid Help 24/7 <span class="verified" aria-label="Verified professional">✓</span></h3><p>Urgent home assistance</p></div><button class="bookmark" type="button" aria-label="Save Rapid Help 24/7">♡</button></div>
+                        <div class="professional-meta"><span class="rating">★ 4.8 <small>(81 reviews)</small></span><span>3.0 km away</span><span class="available"><i></i> Available now</span></div>
+                        <div class="professional-footer"><strong>From ₹599</strong><div><a class="secondary-button view-profile" href="#" data-provider="rapid-help">View Profile</a><a class="primary-button" href="home.html?service=emergency">Book Now</a></div></div>
                     </div>
                 </article>
             </div>
