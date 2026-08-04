@@ -141,6 +141,10 @@ if (loginForm) {
             });
             message.textContent = data.message;
             localStorage.setItem("localConnectUser", data.name || "User");
+            localStorage.setItem("localConnectProfile", JSON.stringify({
+                name: data.name || "User",
+                email: email.value.trim()
+            }));
             setTimeout(() => {
                 window.location.href = "home.html";
             }, 700);
@@ -158,6 +162,7 @@ if (signupForm) {
     const otp = document.getElementById("otp");
     const message = document.getElementById("form-message");
     let verificationToken = "";
+    let isVerifyingOtp = false;
 
     async function sendOtp(triggerButton) {
         if (!validateRequired(email, "Email")) return;
@@ -169,6 +174,8 @@ if (signupForm) {
             document.getElementById("otp-group").classList.remove("hidden");
             email.readOnly = true;
             message.textContent = data.message;
+            otp.value = "";
+            setError(otp, "");
             otp.focus();
         } catch (error) {
             message.textContent = error.message;
@@ -182,16 +189,15 @@ if (signupForm) {
         await sendOtp(event.currentTarget);
     });
 
-    otp.addEventListener("input", () => {
+    async function verifyOtp() {
+        if (isVerifyingOtp) return;
         otp.value = otp.value.replace(/\D/g, "").slice(0, 6);
-    });
-
-    document.getElementById("verify-otp").addEventListener("click", async () => {
         if (!/^\d{6}$/.test(otp.value)) {
             setError(otp, "Enter the complete 6-digit code.");
             return;
         }
         const button = document.getElementById("verify-otp");
+        isVerifyingOtp = true;
         setButtonLoading(button, true, "Verifying…");
         message.textContent = "Verifying code…";
         try {
@@ -210,8 +216,17 @@ if (signupForm) {
             setError(otp, error.message);
             message.textContent = "";
             setButtonLoading(button, false);
+            isVerifyingOtp = false;
         }
+    }
+
+    otp.addEventListener("input", () => {
+        otp.value = otp.value.replace(/\D/g, "").slice(0, 6);
+        if (otp.classList.contains("invalid")) setError(otp, "");
+        if (otp.value.length === 6) verifyOtp();
     });
+
+    document.getElementById("verify-otp").addEventListener("click", verifyOtp);
 
     signupForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -243,7 +258,12 @@ if (signupForm) {
                 verificationToken
             });
             message.textContent = data.message;
-            setTimeout(() => { window.location.href = "index.html"; }, 1400);
+            localStorage.setItem("localConnectUser", name.value.trim());
+            localStorage.setItem("localConnectProfile", JSON.stringify({
+                name: name.value.trim(),
+                email: email.value.trim()
+            }));
+            setTimeout(() => { window.location.href = "home.html"; }, 900);
         } catch (error) {
             message.textContent = error.message;
             setButtonLoading(submit, false);

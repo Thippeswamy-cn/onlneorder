@@ -1,5 +1,46 @@
 const themeToggle = document.querySelector(".theme-toggle");
 const savedTheme = localStorage.getItem("localConnectTheme");
+const headerProfile = document.getElementById("header-profile");
+const desktopProfileLink = document.getElementById("desktop-profile-link");
+const mobileProfileLink = document.getElementById("mobile-profile-link");
+
+function getStoredProfile() {
+    try {
+        return JSON.parse(localStorage.getItem("localConnectProfile") || "null");
+    } catch {
+        return null;
+    }
+}
+
+function getInitials(name, email) {
+    const source = String(name || email || "User").trim();
+    const words = source.split(/\s+/).filter(Boolean);
+    if (words.length >= 2) return `${words[0][0]}${words[1][0]}`.toUpperCase();
+    return source.slice(0, 2).toUpperCase();
+}
+
+function renderHeaderProfile() {
+    const profile = getStoredProfile();
+    if (!profile || !headerProfile) return;
+
+    const displayName = profile.name || "User";
+    const email = profile.email || "";
+    headerProfile.href = "index.html";
+    headerProfile.classList.add("profile-chip");
+    headerProfile.setAttribute("aria-label", `Profile: ${displayName}`);
+    headerProfile.innerHTML = `
+        <span class="profile-avatar" aria-hidden="true">${getInitials(displayName, email)}</span>
+        <span class="profile-copy"><strong>${displayName}</strong><small>${email}</small></span>
+    `;
+
+    if (desktopProfileLink) desktopProfileLink.textContent = displayName;
+    if (mobileProfileLink) {
+        const label = mobileProfileLink.querySelector("span");
+        if (label) label.textContent = "Profile";
+    }
+}
+
+renderHeaderProfile();
 
 const locationButton = document.getElementById("location-button");
 const locationSummary = document.getElementById("location-summary");
