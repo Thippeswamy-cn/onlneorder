@@ -9,7 +9,7 @@ async function loadComponent(selector, url) {
 
 async function startHomePage() {
     try {
-        await loadComponent('[data-component="location"]', "components/location.html");
+        await loadComponent('[data-component="location"]', "/components/location.html");
         await import("./location.js");
         await import("./home.js");
         await import("./premium-card.js");

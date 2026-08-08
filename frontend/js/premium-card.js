@@ -1,6 +1,6 @@
 const featuredServices = [
     {
-        image: "assets/services/ac-repair.png",
+        image: "/assets/services/ac-repair.png",
         imageAlt: "Local AC technician inspecting a wall-mounted air conditioner",
         category: "Appliance Repair",
         title: "Complete AC Care",
@@ -11,10 +11,10 @@ const featuredServices = [
         price: "₹499",
         arrival: "45 min",
         jobs: "620+",
-        buttonUrl: "home.html?service=ac-repair"
+        buttonUrl: "/pages/home.html?service=ac-repair"
     },
     {
-        image: "assets/services/plumber.png",
+        image: "/assets/services/plumber.png",
         imageAlt: "Professional plumber repairing pipework beneath a kitchen sink",
         category: "Plumbing",
         title: "Expert Plumbing",
@@ -25,10 +25,10 @@ const featuredServices = [
         price: "₹299",
         arrival: "35 min",
         jobs: "840+",
-        buttonUrl: "home.html?service=plumber"
+        buttonUrl: "/pages/home.html?service=plumber"
     },
     {
-        image: "assets/services/electrician.png",
+        image: "/assets/services/electrician.png",
         imageAlt: "Qualified electrician inspecting a residential electrical panel",
         category: "Electrical",
         title: "Safe Electricals",
@@ -39,10 +39,10 @@ const featuredServices = [
         price: "₹349",
         arrival: "50 min",
         jobs: "710+",
-        buttonUrl: "home.html?service=electrician"
+        buttonUrl: "/pages/home.html?service=electrician"
     },
     {
-        image: "assets/services/cleaning.png",
+        image: "/assets/services/cleaning.png",
         imageAlt: "Home cleaning professional carefully wiping a living-room table",
         category: "Home Cleaning",
         title: "Premium Cleaning",
@@ -53,10 +53,10 @@ const featuredServices = [
         price: "₹599",
         arrival: "60 min",
         jobs: "960+",
-        buttonUrl: "home.html?service=cleaning"
+        buttonUrl: "/pages/home.html?service=cleaning"
     },
     {
-        image: "assets/services/car-mechanic.png",
+        image: "/assets/services/car-mechanic.png",
         imageAlt: "Professional car mechanic diagnosing a vehicle in a clean workshop",
         category: "Vehicle Repair",
         title: "Complete Car Care",
@@ -67,10 +67,10 @@ const featuredServices = [
         price: "₹499",
         arrival: "40 min",
         jobs: "530+",
-        buttonUrl: "home.html?service=car-mechanic"
+        buttonUrl: "/pages/home.html?service=car-mechanic"
     },
     {
-        image: "assets/services/bike-mechanic.png",
+        image: "/assets/services/bike-mechanic.png",
         imageAlt: "Experienced bike mechanic servicing a motorcycle engine",
         category: "Vehicle Repair",
         title: "Bike Service Pro",
@@ -81,7 +81,7 @@ const featuredServices = [
         price: "₹399",
         arrival: "30 min",
         jobs: "480+",
-        buttonUrl: "home.html?service=bike-mechanic"
+        buttonUrl: "/pages/home.html?service=bike-mechanic"
     }
 ];
 

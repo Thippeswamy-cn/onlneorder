@@ -8,9 +8,11 @@ and a multi-step booking interface.
 
 ```text
 backend/                  Flask application and SQLite database
-frontend/                 Browser application
+frontend/pages/           HTML pages
+frontend/js/              Browser JavaScript
+frontend/css/             Stylesheets
 frontend/components/      Reusable HTML components
-frontend/component-loader.js
+frontend/assets/          Images and other static assets
 requirements.in           Human-maintained direct dependencies
 requirements.txt          Pinned deployment dependencies
 wsgi.py                   Production WSGI entry point

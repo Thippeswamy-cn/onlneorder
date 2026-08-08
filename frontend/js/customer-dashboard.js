@@ -82,7 +82,7 @@ function getFavourites() {
     return readStorage(STORAGE.favourites, []);
 }
 
-function emptyState(icon, title, copy, linkText = "", href = "home.html#categories") {
+function emptyState(icon, title, copy, linkText = "", href = "/pages/home.html#categories") {
     return `<div class="empty-state"><span>${icon}</span><strong>${title}</strong><p>${copy}</p>${linkText ? `<a class="primary-button" href="${href}">${linkText}</a>` : ""}</div>`;
 }
 
@@ -310,10 +310,10 @@ function cancelBooking(id) {
 function renderFavourites(favourites) {
     const list = document.getElementById("favourite-list");
     if (!favourites.length) {
-        list.innerHTML = emptyState("♡", "No favourite professionals", "Save professionals from the home page to find them here.", "Find professionals", "home.html#service-professionals");
+        list.innerHTML = emptyState("♡", "No favourite professionals", "Save professionals from the home page to find them here.", "Find professionals", "/pages/home.html#service-professionals");
         return;
     }
-    list.innerHTML = favourites.map(item => `<article class="favourite-card"><img src="${escapeHtml(item.image || "assets/services/plumber.png")}" alt=""><div><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.type || "Local service professional")}</p><strong>${escapeHtml(item.rating || "Verified professional")}</strong></div><footer><button data-remove-favourite="${escapeHtml(item.id)}">Remove</button><a href="home.html?service=${encodeURIComponent(item.service || "")}">Book now</a></footer></article>`).join("");
+    list.innerHTML = favourites.map(item => `<article class="favourite-card"><img src="${escapeHtml(item.image || "/assets/services/plumber.png")}" alt=""><div><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.type || "Local service professional")}</p><strong>${escapeHtml(item.rating || "Verified professional")}</strong></div><footer><button data-remove-favourite="${escapeHtml(item.id)}">Remove</button><a href="/pages/home.html?service=${encodeURIComponent(item.service || "")}">Book now</a></footer></article>`).join("");
 }
 
 document.getElementById("favourite-list").addEventListener("click", event => {
@@ -348,7 +348,7 @@ function logout() {
     localStorage.removeItem(STORAGE.user);
     localStorage.removeItem(STORAGE.profile);
     sessionStorage.removeItem("localConnectBookingDraft");
-    window.location.href = "index.html";
+    window.location.href = "/pages/index.html";
 }
 
 document.querySelectorAll("[data-logout]").forEach(button => button.addEventListener("click", () => {
@@ -359,7 +359,7 @@ document.getElementById("delete-local-data").addEventListener("click", () => {
     if (!confirm("Delete your locally stored profile, addresses, bookings, favourites and settings? This cannot be undone.")) return;
     Object.values(STORAGE).forEach(key => localStorage.removeItem(key));
     sessionStorage.clear();
-    window.location.href = "index.html";
+    window.location.href = "/pages/index.html";
 });
 
 function renderAll() {

@@ -25,7 +25,7 @@ function renderHeaderProfile() {
 
     const displayName = profile.name || "User";
     const email = profile.email || "";
-    headerProfile.href = "customer-dashboard.html";
+    headerProfile.href = "/pages/customer-dashboard.html";
     headerProfile.classList.add("profile-chip");
     headerProfile.setAttribute("aria-label", `Profile: ${displayName}`);
     headerProfile.innerHTML = `
@@ -210,7 +210,7 @@ function configureBookmark(button, card) {
             id,
             name: heading?.childNodes[0]?.textContent.trim() || heading?.textContent.trim() || "Service professional",
             type: card.querySelector(".professional-title p")?.textContent.trim() || "Local service professional",
-            image: card.querySelector("img")?.getAttribute("src") || "assets/services/plumber.png",
+            image: card.querySelector("img")?.getAttribute("src") || "/assets/services/plumber.png",
             rating: card.querySelector(".rating")?.textContent.trim() || "Verified professional",
             service: (card.dataset.service || "").split(" ")[0]
         });
@@ -225,7 +225,7 @@ const providerProfiles = {
     "sri-sai": {
         name: "Sri Sai Plumbing Works", type: "Plumbing service",
         speciality: "Leaks, taps, pipes, bathroom fittings and installations",
-        image: "assets/services/plumber.png", rating: "★ 4.8 (126 reviews)",
+        image: "/assets/services/plumber.png", rating: "★ 4.8 (126 reviews)",
         distance: "2.1 km away", availability: "Available today",
         about: "A verified local plumbing team for household repairs, installations and urgent water leaks. You receive a price confirmation before work begins.",
         facts: [["Experience", "8+ years"], ["Jobs completed", "640+"], ["Service warranty", "30 days"]],
@@ -236,7 +236,7 @@ const providerProfiles = {
     "rk-motors": {
         name: "RK Motors & Service", type: "Vehicle repair service",
         speciality: "Car and bike diagnostics, servicing and mechanical repair",
-        image: "assets/services/car-mechanic.png", rating: "★ 4.7 (89 reviews)",
+        image: "/assets/services/car-mechanic.png", rating: "★ 4.7 (89 reviews)",
         distance: "4.5 km away", availability: "Available today",
         about: "A multi-brand vehicle workshop providing routine maintenance, fault diagnosis and repair for cars and motorcycles, with approval required for replacement parts.",
         facts: [["Experience", "11+ years"], ["Vehicles serviced", "1,200+"], ["Service warranty", "15 days"]],
@@ -247,7 +247,7 @@ const providerProfiles = {
     "davangere-electricals": {
         name: "Davangere Electricals", type: "Electrical service",
         speciality: "Wiring, switches, lighting, fans and electrical safety checks",
-        image: "assets/services/electrician.png", rating: "★ 4.9 (74 reviews)",
+        image: "/assets/services/electrician.png", rating: "★ 4.9 (74 reviews)",
         distance: "3.2 km away", availability: "Available now",
         about: "A certified electrician for safe home repairs and installations. All work is checked before completion, and any extra material cost is explained in advance.",
         facts: [["Experience", "9+ years"], ["Jobs completed", "510+"], ["Service warranty", "30 days"]],
@@ -258,7 +258,7 @@ const providerProfiles = {
     "sparkle-home-care": {
         name: "Sparkle Home Care", type: "Home cleaning service",
         speciality: "Regular cleaning, deep cleaning, kitchens and bathrooms",
-        image: "assets/services/cleaning.png", rating: "★ 4.8 (112 reviews)",
+        image: "/assets/services/cleaning.png", rating: "★ 4.8 (112 reviews)",
         distance: "2.8 km away", availability: "Available today",
         about: "A trained cleaning team for routine and intensive home cleaning. Choose the rooms you need and see the labour price before confirming.",
         facts: [["Experience", "6+ years"], ["Homes cleaned", "870+"], ["Service warranty", "3 days"]],
@@ -269,7 +269,7 @@ const providerProfiles = {
     "cooltech": {
         name: "CoolTech Appliance Care", type: "Appliance repair service",
         speciality: "AC, refrigerator, washing machine and small appliance repair",
-        image: "assets/services/ac-repair.png", rating: "★ 4.7 (96 reviews)",
+        image: "/assets/services/ac-repair.png", rating: "★ 4.7 (96 reviews)",
         distance: "3.7 km away", availability: "Available today",
         about: "A multi-appliance technician offering fault checks, servicing and repair. Spare parts are charged separately only after your approval.",
         facts: [["Experience", "10+ years"], ["Repairs completed", "930+"], ["Service warranty", "30 days"]],
@@ -280,7 +280,7 @@ const providerProfiles = {
     "glow-at-home": {
         name: "Glow at Home", type: "Beauty service",
         speciality: "Hair, skincare, makeup and salon treatments at home",
-        image: "assets/services/cleaning.png", rating: "★ 4.9 (138 reviews)",
+        image: "/assets/services/cleaning.png", rating: "★ 4.9 (138 reviews)",
         distance: "2.5 km away", availability: "Available tomorrow",
         about: "Professional salon services delivered at home with sanitized tools and single-use essentials. Select individual treatments or a complete package.",
         facts: [["Experience", "7+ years"], ["Appointments", "1,050+"], ["Hygiene", "Certified"]],
@@ -291,7 +291,7 @@ const providerProfiles = {
     "safemove": {
         name: "SafeMove Packers", type: "Moving service",
         speciality: "Packing, loading, transport and local household shifting",
-        image: "assets/services/car-mechanic.png", rating: "★ 4.6 (67 reviews)",
+        image: "/assets/services/car-mechanic.png", rating: "★ 4.6 (67 reviews)",
         distance: "5.1 km away", availability: "Available tomorrow",
         about: "A careful local moving crew for rooms, apartments and small offices. A survey confirms the final price based on distance and load.",
         facts: [["Experience", "9+ years"], ["Moves completed", "480+"], ["Damage cover", "Included"]],
@@ -302,7 +302,7 @@ const providerProfiles = {
     "rapid-help": {
         name: "Rapid Help 24/7", type: "Emergency service",
         speciality: "Urgent plumbing, electrical and roadside assistance",
-        image: "assets/services/plumber.png", rating: "★ 4.8 (81 reviews)",
+        image: "/assets/services/plumber.png", rating: "★ 4.8 (81 reviews)",
         distance: "3.0 km away", availability: "Available now",
         about: "Fast dispatch for urgent household faults and roadside problems. The call-out fee covers arrival and diagnosis; repair costs are confirmed on site.",
         facts: [["Response time", "30–60 min"], ["Cases handled", "720+"], ["Availability", "24/7"]],
@@ -373,7 +373,7 @@ additionalProviders.forEach(provider => {
             </div>
             <div class="professional-footer">
                 <strong>From ${base.startingPrice}</strong>
-                <div><a class="secondary-button view-profile" href="#" data-provider="${provider.key}">View Profile</a><a class="primary-button" href="home.html?service=${base.bookingService}">Book Now</a></div>
+                <div><a class="secondary-button view-profile" href="#" data-provider="${provider.key}">View Profile</a><a class="primary-button" href="/pages/home.html?service=${base.bookingService}">Book Now</a></div>
             </div>
         </div>`;
     const bookmark = card.querySelector(".bookmark");

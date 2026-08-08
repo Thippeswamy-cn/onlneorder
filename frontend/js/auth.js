@@ -1,8 +1,7 @@
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const isFlaskOrigin = ["5000", "80", "443", ""].includes(window.location.port)
-    && window.location.protocol !== "file:";
+const isFlaskOrigin = ["http:", "https:"].includes(window.location.protocol);
 const API_URL = window.AUTH_API_URL
-    || (isFlaskOrigin ? "/api" : "http://127.0.0.1:5000/api");
+    || (isFlaskOrigin ? "/api" : "http://127.0.0.1:3000/api");
 
 function setError(input, message) {
     const error = document.getElementById(`${input.id}-error`);
@@ -146,11 +145,83 @@ if (loginForm) {
                 email: email.value.trim()
             }));
             setTimeout(() => {
-                window.location.href = "home.html";
+                window.location.href = "/pages/home.html";
             }, 700);
         } catch (error) {
             message.textContent = error.message;
         } finally {
+            setButtonLoading(submit, false);
+        }
+    });
+}
+
+const passwordResetForm = document.getElementById("password-reset-form");
+if (passwordResetForm) {
+    const email = document.getElementById("reset-email");
+    const otp = document.getElementById("reset-otp");
+    const password = document.getElementById("reset-new-password");
+    const confirmPassword = document.getElementById("reset-confirm-password");
+    const message = document.getElementById("reset-message");
+
+    async function requestResetCode(button) {
+        if (!validateRequired(email, "Email")) return;
+        setButtonLoading(button, true, "Sending…");
+        message.textContent = "Sending reset code…";
+        try {
+            const data = await apiRequest("/request-password-reset", {
+                email: email.value.trim()
+            });
+            email.readOnly = true;
+            document.getElementById("reset-password-step").classList.remove("hidden");
+            document.getElementById("reset-description").textContent =
+                `Enter the code sent to ${email.value.trim()}.`;
+            message.textContent = data.message;
+            otp.focus();
+        } catch (error) {
+            message.textContent = error.message;
+        } finally {
+            setButtonLoading(button, false);
+        }
+    }
+
+    document.getElementById("request-reset-code").addEventListener("click", (event) => {
+        requestResetCode(event.currentTarget);
+    });
+    document.getElementById("resend-reset-code").addEventListener("click", (event) => {
+        requestResetCode(event.currentTarget);
+    });
+
+    otp.addEventListener("input", () => {
+        otp.value = otp.value.replace(/\D/g, "").slice(0, 6);
+    });
+
+    passwordResetForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        let valid = /^\d{6}$/.test(otp.value);
+        setError(otp, valid ? "" : "Enter the complete 6-digit code.");
+        valid = validateRequired(password, "Password") && valid;
+        valid = validateRequired(confirmPassword, "Password confirmation") && valid;
+        if (password.value && password.value !== confirmPassword.value) {
+            setError(confirmPassword, "Passwords do not match.");
+            valid = false;
+        }
+        if (!valid) return;
+
+        const submit = passwordResetForm.querySelector('[type="submit"]');
+        setButtonLoading(submit, true, "Updating…");
+        message.textContent = "Updating your password…";
+        try {
+            const data = await apiRequest("/reset-password", {
+                email: email.value.trim(),
+                otp: otp.value,
+                password: password.value
+            });
+            message.textContent = data.message;
+            setTimeout(() => {
+                window.location.href = "/pages/index.html";
+            }, 1200);
+        } catch (error) {
+            message.textContent = error.message;
             setButtonLoading(submit, false);
         }
     });
@@ -263,7 +334,7 @@ if (signupForm) {
                 name: name.value.trim(),
                 email: email.value.trim()
             }));
-            setTimeout(() => { window.location.href = "home.html"; }, 900);
+            setTimeout(() => { window.location.href = "/pages/home.html"; }, 900);
         } catch (error) {
             message.textContent = error.message;
             setButtonLoading(submit, false);
