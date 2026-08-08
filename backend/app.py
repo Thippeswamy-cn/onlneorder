@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import secrets
 import smtplib
@@ -6,7 +7,9 @@ import sqlite3
 import time
 from email.message import EmailMessage
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
@@ -79,27 +82,67 @@ def user_exists(email):
 
 
 def send_otp_email(email, otp, purpose="account verification"):
+    brevo_api_key = os.getenv("BREVO_API_KEY")
     smtp_host = os.getenv("SMTP_HOST")
     smtp_username = os.getenv("SMTP_USERNAME")
     smtp_password = "".join(os.getenv("SMTP_PASSWORD", "").split())
     from_email = (
-        os.getenv("SMTP_FROM_EMAIL")
+        os.getenv("BREVO_FROM_EMAIL")
+        or os.getenv("SMTP_FROM_EMAIL")
         or os.getenv("FROM_EMAIL")
         or smtp_username
     )
+
+    subject = f"Your {purpose} code"
+    content = (
+        f"Your {purpose} code is {otp}.\n\n"
+        "This code expires in 10 minutes. If you did not request it, ignore this email."
+    )
+
+    if brevo_api_key:
+        if not from_email:
+            raise OSError("BREVO_FROM_EMAIL is required when BREVO_API_KEY is set")
+        payload = json.dumps(
+            {
+                "sender": {
+                    "email": from_email,
+                    "name": os.getenv("BREVO_SENDER_NAME", "LocalConnect"),
+                },
+                "to": [{"email": email}],
+                "subject": subject,
+                "textContent": content,
+            }
+        ).encode("utf-8")
+        api_request = Request(
+            "https://api.brevo.com/v3/smtp/email",
+            data=payload,
+            headers={
+                "accept": "application/json",
+                "api-key": brevo_api_key,
+                "content-type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urlopen(api_request, timeout=15) as response:
+                if response.status != 201:
+                    raise OSError(f"Brevo returned HTTP {response.status}")
+        except HTTPError as error:
+            details = error.read().decode("utf-8", errors="replace")
+            raise OSError(f"Brevo returned HTTP {error.code}: {details}") from error
+        except URLError as error:
+            raise OSError(f"Could not connect to Brevo: {error.reason}") from error
+        return True
 
     if not all((smtp_host, smtp_username, smtp_password, from_email)):
         app.logger.warning("Development OTP for %s: %s", email, otp)
         return False
 
     message = EmailMessage()
-    message["Subject"] = f"Your {purpose} code"
+    message["Subject"] = subject
     message["From"] = from_email
     message["To"] = email
-    message.set_content(
-        f"Your {purpose} code is {otp}.\n\n"
-        "This code expires in 10 minutes. If you did not request it, ignore this email."
-    )
+    message.set_content(content)
 
     try:
         smtp_port = int(os.getenv("SMTP_PORT", "587"))

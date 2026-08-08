@@ -60,7 +60,13 @@ Set at least these environment variables in the hosting platform:
 - `FLASK_DEBUG=false`
 - `PORT` to the platform-provided port
 - `DATABASE_PATH` to persistent storage
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `FROM_EMAIL`
+- On Render Free: `BREVO_API_KEY`, `BREVO_FROM_EMAIL`, and optionally
+  `BREVO_SENDER_NAME`. The sender email must be verified in Brevo.
+- On hosts that allow SMTP: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`,
+  `SMTP_PASSWORD`, and `SMTP_FROM_EMAIL`.
+
+When `BREVO_API_KEY` is set, the application sends OTP messages through Brevo's
+HTTPS transactional-email API. Otherwise it falls back to SMTP.
 
 On a Linux host, install the lock file and start the WSGI application:
 
