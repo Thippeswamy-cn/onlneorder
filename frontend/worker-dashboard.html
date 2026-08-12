@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage LocalConnect worker jobs, earnings and profile">
+    <title>Worker dashboard - LocalConnect</title>
+    <link rel="stylesheet" href="worker-dashboard.css">
+</head>
+<body>
+    <header class="worker-header">
+        <div class="header-inner">
+            <a class="brand" href="home.html"><span class="brand-mark">L</span><span>Local<strong>Connect</strong></span></a>
+            <a class="back-home" href="home.html">Back to marketplace</a>
+            <button class="availability-toggle is-online" id="availability-toggle" type="button" aria-pressed="true"><span></span>Online</button>
+        </div>
+    </header>
+
+    <div class="worker-layout">
+        <aside class="worker-sidebar">
+            <div class="worker-identity">
+                <span class="avatar" id="worker-avatar">SK</span>
+                <div><strong id="worker-name">Suresh Kumar</strong><small id="worker-trade">Electrical specialist</small></div>
+            </div>
+            <nav class="worker-nav" aria-label="Worker dashboard">
+                <button class="active" data-view="overview"><span>01</span>Overview</button>
+                <button data-view="requests"><span>02</span>New requests <b id="request-count">0</b></button>
+                <button data-view="jobs"><span>03</span>My jobs</button>
+                <button data-view="earnings"><span>04</span>Earnings</button>
+                <button data-view="profile"><span>05</span>Profile</button>
+            </nav>
+        </aside>
+
+        <main class="worker-content">
+            <section class="worker-view active" data-panel="overview">
+                <div class="page-heading">
+                    <div><span class="eyebrow">Worker dashboard</span><h1>Today's work queue</h1><p>Review incoming requests, current jobs and payout progress.</p></div>
+                    <button class="primary-button" data-view-link="requests" type="button">Review requests</button>
+                </div>
+
+                <div class="summary-grid">
+                    <button data-view-link="requests"><small>New requests</small><strong id="summary-requests">0</strong><em>Review now</em></button>
+                    <button data-view-link="jobs"><small>Active jobs</small><strong id="summary-active">0</strong><em>Open jobs</em></button>
+                    <button data-view-link="earnings"><small>Today earnings</small><strong id="summary-earnings">Rs 0</strong><em>View payouts</em></button>
+                    <button data-view-link="profile"><small>Profile score</small><strong id="summary-score">92%</strong><em>Improve profile</em></button>
+                </div>
+
+                <div class="dashboard-grid">
+                    <section class="panel-card">
+                        <div class="card-heading"><div><span class="eyebrow">Next appointment</span><h2>Current job</h2></div><button class="text-button" data-view-link="jobs" type="button">View all</button></div>
+                        <div id="current-job"></div>
+                    </section>
+                    <section class="panel-card">
+                        <div class="card-heading"><div><span class="eyebrow">Performance</span><h2>This week</h2></div></div>
+                        <div class="performance-list">
+                            <div><span>Rating</span><strong>4.9</strong><small>74 reviews</small></div>
+                            <div><span>Completion</span><strong>96%</strong><small>On-time jobs</small></div>
+                            <div><span>Response</span><strong>8m</strong><small>Average reply</small></div>
+                        </div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="worker-view" data-panel="requests" hidden>
+                <div class="page-heading">
+                    <div><span class="eyebrow">Booking requests</span><h1>New customer requests</h1><p>Accept jobs that match your route and availability.</p></div>
+                </div>
+                <div class="job-list" id="request-list"></div>
+            </section>
+
+            <section class="worker-view" data-panel="jobs" hidden>
+                <div class="page-heading">
+                    <div><span class="eyebrow">Assigned work</span><h1>My jobs</h1><p>Update status as you move from arrival to completion.</p></div>
+                </div>
+                <div class="job-list" id="job-list"></div>
+            </section>
+
+            <section class="worker-view" data-panel="earnings" hidden>
+                <div class="page-heading">
+                    <div><span class="eyebrow">Payouts</span><h1>Earnings</h1><p>Track daily income, tips and pending settlement.</p></div>
+                </div>
+                <div class="earnings-grid">
+                    <section class="panel-card earnings-total"><span>This week</span><strong id="week-earnings">Rs 0</strong><small>Includes completed jobs and customer tips</small></section>
+                    <section class="panel-card earnings-total"><span>Pending payout</span><strong>Rs 2,450</strong><small>Settles on Friday</small></section>
+                    <section class="panel-card">
+                        <div class="card-heading"><div><span class="eyebrow">Breakdown</span><h2>Recent payments</h2></div></div>
+                        <div class="payment-list" id="payment-list"></div>
+                    </section>
+                </div>
+            </section>
+
+            <section class="worker-view" data-panel="profile" hidden>
+                <div class="page-heading">
+                    <div><span class="eyebrow">Public profile</span><h1>Worker profile</h1><p>Keep your services, coverage and contact details current.</p></div>
+                </div>
+                <form class="panel-card profile-form" id="worker-profile-form">
+                    <div class="profile-photo-row"><span class="avatar large" id="profile-avatar">SK</span><div><strong>Verification active</strong><small>Your profile is visible to customers nearby.</small></div></div>
+                    <div class="form-grid">
+                        <label>Display name<input name="name" required minlength="2"></label>
+                        <label>Service category<select name="trade"><option>Electrical specialist</option><option>Plumbing specialist</option><option>Home cleaning specialist</option><option>Appliance technician</option><option>Vehicle mechanic</option></select></label>
+                        <label>Phone number<input name="phone" inputmode="tel" pattern="[0-9 +()-]{7,18}"></label>
+                        <label>Service area<input name="area" required></label>
+                        <label class="full">Short bio<input name="bio" maxlength="120"></label>
+                    </div>
+                    <div class="form-actions"><button class="secondary-button" type="reset">Discard</button><button class="primary-button" type="submit">Save profile</button></div>
+                    <p class="form-message" id="profile-message" role="status"></p>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="worker-dashboard.js"></script>
+</body>
+</html>

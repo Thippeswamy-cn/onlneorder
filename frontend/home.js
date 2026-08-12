@@ -25,7 +25,7 @@ function renderHeaderProfile() {
 
     const displayName = profile.name || "User";
     const email = profile.email || "";
-    headerProfile.href = "customer-dashboard.html";
+    headerProfile.href = "dashboard.html#user";
     headerProfile.classList.add("profile-chip");
     headerProfile.setAttribute("aria-label", `Profile: ${displayName}`);
     headerProfile.innerHTML = `
