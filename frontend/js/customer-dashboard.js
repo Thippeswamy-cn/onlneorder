@@ -1,3 +1,11 @@
+import {
+    clearAccountState,
+    hydrateAccountState,
+    logoutAccount,
+    resourceForStorageKey,
+    syncResource
+} from "./account-state.js";
+
 const STORAGE = {
     profile: "localConnectProfile",
     user: "localConnectUser",
@@ -6,7 +14,8 @@ const STORAGE = {
     bookings: "localConnectBookings",
     favourites: "localConnectFavourites",
     settings: "localConnectSettings",
-    theme: "localConnectTheme"
+    theme: "localConnectTheme",
+    notificationsReadAt: "localConnectNotificationsReadAt"
 };
 
 const activeStatuses = new Set(["requested", "confirmed", "accepted", "scheduled", "on the way", "in progress"]);
@@ -21,6 +30,13 @@ const rescheduleForm = document.getElementById("reschedule-form");
 const toast = document.getElementById("toast");
 let toastTimer;
 
+function applyDashboardTheme(theme = localStorage.getItem(STORAGE.theme) || "system") {
+    const prefersNight = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.body.classList.toggle("night-mode", theme === "night" || (theme === "system" && prefersNight));
+}
+
+applyDashboardTheme();
+
 function readStorage(key, fallback) {
     try {
         const value = JSON.parse(localStorage.getItem(key));
@@ -32,6 +48,8 @@ function readStorage(key, fallback) {
 
 function writeStorage(key, value) {
     localStorage.setItem(key, JSON.stringify(value));
+    const resource = resourceForStorageKey(key);
+    if (resource) syncResource(resource, value);
 }
 
 function escapeHtml(value) {
@@ -111,12 +129,15 @@ function renderIdentity() {
     document.getElementById("sidebar-name").textContent = profile.name || "Customer";
     document.getElementById("sidebar-email").textContent = profile.email || "Complete your profile";
     document.getElementById("welcome-name").textContent = String(profile.name || "Customer").split(" ")[0];
+    const hour = new Date().getHours();
+    document.getElementById("greeting-time").textContent = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
 }
 
 function statusClass(status) {
     const normalized = String(status).toLowerCase();
     if (normalized === "completed") return "completed";
     if (normalized === "cancelled") return "cancelled";
+    if (["on the way", "in progress"].includes(normalized)) return "in-progress";
     return "";
 }
 
@@ -132,7 +153,9 @@ function bookingCard(booking) {
     const provider = escapeHtml(booking.provider || "Professional to be assigned");
     const status = escapeHtml(booking.status);
     const active = activeStatuses.has(String(booking.status).toLowerCase());
-    return `<article class="booking-card"><span class="booking-icon">⌂</span><div class="booking-copy"><h2>${service}</h2><p>${provider} · ${id}</p><small>${formatDate(booking.date)} · ${escapeHtml(booking.time || "Time to be confirmed")}</small></div><div class="booking-side"><span class="status ${statusClass(booking.status)}">${status}</span><div class="booking-actions">${active ? `<button data-reschedule="${id}">Reschedule</button>` : ""}<button class="primary-small" data-booking-detail="${id}">View details</button></div></div></article>`;
+    const completed = String(booking.status).toLowerCase() === "completed";
+    const repeatService = encodeURIComponent(booking.serviceType || booking.service || "");
+    return `<article class="booking-card"><span class="booking-icon">⌂</span><div class="booking-copy"><h2>${service}</h2><p>${provider} · ${id}</p><small>${formatDate(booking.date)} · ${escapeHtml(booking.time || "Time to be confirmed")}</small></div><div class="booking-side"><span class="status ${statusClass(booking.status)}">${status}</span><div class="booking-actions">${active ? `<button data-reschedule="${id}">Reschedule</button>` : ""}${completed ? `<a class="booking-repeat" href="/pages/home.html?service=${repeatService}">Book again</a>` : ""}<button class="primary-small" data-booking-detail="${id}">View details</button></div></div></article>`;
 }
 
 function renderOverview(bookings, addresses, favourites) {
@@ -141,10 +164,39 @@ function renderOverview(bookings, addresses, favourites) {
     document.getElementById("summary-active").textContent = active.length;
     document.getElementById("summary-completed").textContent = completed.length;
     document.getElementById("summary-favourites").textContent = favourites.length;
-    document.getElementById("summary-addresses").textContent = addresses.length;
+    const totalSpent = completed.reduce((sum, booking) => sum + Number(booking.total || String(booking.price || "").replace(/[^\d]/g, "") || 0), 0);
+    document.getElementById("summary-spent").textContent = `₹${totalSpent.toLocaleString("en-IN")}`;
     document.getElementById("active-count").textContent = active.length;
     document.getElementById("overview-booking").innerHTML = active.length ? bookingCard(active[0]) : emptyState("◷", "No active bookings", "Your next confirmed service will appear here.", "Find a service");
 }
+
+function renderNotifications(bookings) {
+    const list = document.getElementById("notification-list");
+    const readAt = Number(localStorage.getItem(STORAGE.notificationsReadAt) || 0);
+    const notifications = bookings.slice(0, 8).map(booking => {
+        const timestamp = new Date(booking.createdAt || booking.rescheduledAt || booking.cancelledAt || 0).getTime();
+        const status = String(booking.status || "Requested");
+        return {
+            id: booking.id || "Pending booking",
+            title: status === "Cancelled" ? "Booking cancelled" : status === "Completed" ? "Service completed" : "Booking update",
+            copy: `${booking.service || "Home service"} with ${booking.provider || "your professional"} is ${status.toLowerCase()}.`,
+            timestamp,
+            unread: timestamp > readAt
+        };
+    });
+    document.getElementById("notification-count").textContent = notifications.filter(item => item.unread).length;
+    if (!notifications.length) {
+        list.innerHTML = emptyState("♢", "You're all caught up", "Booking and account updates will appear here.", "Explore services");
+        return;
+    }
+    list.innerHTML = notifications.map(item => `<article class="notification-item ${item.unread ? "unread" : ""}"><span class="notification-indicator" aria-hidden="true"></span><div><strong>${escapeHtml(item.title)}</strong><p>${escapeHtml(item.copy)}</p><small>${escapeHtml(item.id)}</small></div><button data-booking-detail="${escapeHtml(item.id)}">View booking</button></article>`).join("");
+}
+
+document.getElementById("mark-notifications-read").addEventListener("click", () => {
+    localStorage.setItem(STORAGE.notificationsReadAt, String(Date.now()));
+    renderNotifications(getBookings());
+    notify("Notifications marked as read");
+});
 
 function renderProfileForm() {
     const profile = getProfile();
@@ -313,7 +365,7 @@ function renderFavourites(favourites) {
         list.innerHTML = emptyState("♡", "No favourite professionals", "Save professionals from the home page to find them here.", "Find professionals", "/pages/home.html#service-professionals");
         return;
     }
-    list.innerHTML = favourites.map(item => `<article class="favourite-card"><img src="${escapeHtml(item.image || "/assets/services/plumber.png")}" alt=""><div><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.type || "Local service professional")}</p><strong>${escapeHtml(item.rating || "Verified professional")}</strong></div><footer><button data-remove-favourite="${escapeHtml(item.id)}">Remove</button><a href="/pages/home.html?service=${encodeURIComponent(item.service || "")}">Book now</a></footer></article>`).join("");
+    list.innerHTML = favourites.map(item => `<article class="favourite-card"><img src="${escapeHtml(item.image || "/assets/services/plumber-480.webp")}" alt=""><div><h2>${escapeHtml(item.name)}</h2><p>${escapeHtml(item.type || "Local service professional")}</p><strong>${escapeHtml(item.rating || "Verified professional")}</strong></div><footer><button data-remove-favourite="${escapeHtml(item.id)}">Remove</button><a href="/pages/home.html?service=${encodeURIComponent(item.service || "")}">Book now</a></footer></article>`).join("");
 }
 
 document.getElementById("favourite-list").addEventListener("click", event => {
@@ -338,27 +390,30 @@ document.getElementById("settings-form").addEventListener("submit", event => {
     const data = Object.fromEntries(new FormData(form).entries());
     form.querySelectorAll('input[type="checkbox"]').forEach(input => { data[input.name] = input.checked; });
     writeStorage(STORAGE.settings, data);
-    if (data.theme === "night") localStorage.setItem(STORAGE.theme, "night");
-    if (data.theme === "light") localStorage.setItem(STORAGE.theme, "day");
+    localStorage.setItem(STORAGE.theme, data.theme === "light" ? "day" : data.theme);
+    applyDashboardTheme(data.theme);
     document.getElementById("settings-message").textContent = "Settings saved.";
     notify("Settings saved");
 });
 
-function logout() {
+async function logout() {
+    await logoutAccount();
     localStorage.removeItem(STORAGE.user);
     localStorage.removeItem(STORAGE.profile);
     sessionStorage.removeItem("localConnectBookingDraft");
     window.location.href = "/pages/index.html";
 }
 
-document.querySelectorAll("[data-logout]").forEach(button => button.addEventListener("click", () => {
-    if (confirm("Log out of LocalConnect on this device?")) logout();
+document.querySelectorAll("[data-logout]").forEach(button => button.addEventListener("click", async () => {
+    if (confirm("Log out of LocalConnect on this device?")) await logout();
 }));
 
-document.getElementById("delete-local-data").addEventListener("click", () => {
-    if (!confirm("Delete your locally stored profile, addresses, bookings, favourites and settings? This cannot be undone.")) return;
+document.getElementById("delete-local-data").addEventListener("click", async () => {
+    if (!confirm("Delete your profile, addresses, bookings, favourites and settings from this account? This cannot be undone.")) return;
+    await clearAccountState().catch(() => undefined);
     Object.values(STORAGE).forEach(key => localStorage.removeItem(key));
     sessionStorage.clear();
+    await logoutAccount();
     window.location.href = "/pages/index.html";
 });
 
@@ -372,8 +427,11 @@ function renderAll() {
     renderAddresses(addresses);
     renderBookings(bookings);
     renderFavourites(favourites);
+    renderNotifications(bookings);
     renderSettings();
 }
 
 window.addEventListener("hashchange", () => showView(location.hash.slice(1), false));
-showView(location.hash.slice(1) || "overview", false);
+hydrateAccountState()
+    .catch(() => undefined)
+    .finally(() => showView(location.hash.slice(1) || "overview", false));

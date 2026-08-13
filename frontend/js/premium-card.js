@@ -1,10 +1,13 @@
+import { syncResource } from "./account-state.js";
+
 const featuredServices = [
     {
-        image: "/assets/services/ac-repair.png",
+        image: "/assets/services/ac-repair-480.webp",
         imageAlt: "Local AC technician inspecting a wall-mounted air conditioner",
         category: "Appliance Repair",
         title: "Complete AC Care",
-        professional: "CoolCare Services",
+        professional: "CoolTech Appliance Care",
+        providerKey: "cooltech",
         rating: "4.8",
         reviews: "118",
         distance: "4.8 km",
@@ -14,11 +17,12 @@ const featuredServices = [
         buttonUrl: "/pages/home.html?service=ac-repair"
     },
     {
-        image: "/assets/services/plumber.png",
+        image: "/assets/services/plumber-480.webp",
         imageAlt: "Professional plumber repairing pipework beneath a kitchen sink",
         category: "Plumbing",
         title: "Expert Plumbing",
         professional: "Sri Sai Plumbing Works",
+        providerKey: "sri-sai",
         rating: "4.9",
         reviews: "126",
         distance: "2.1 km",
@@ -28,11 +32,12 @@ const featuredServices = [
         buttonUrl: "/pages/home.html?service=plumber"
     },
     {
-        image: "/assets/services/electrician.png",
+        image: "/assets/services/electrician-480.webp",
         imageAlt: "Qualified electrician inspecting a residential electrical panel",
         category: "Electrical",
         title: "Safe Electricals",
         professional: "Davangere Electricals",
+        providerKey: "davangere-electricals",
         rating: "4.9",
         reviews: "174",
         distance: "3.2 km",
@@ -42,11 +47,12 @@ const featuredServices = [
         buttonUrl: "/pages/home.html?service=electrician"
     },
     {
-        image: "/assets/services/cleaning.png",
+        image: "/assets/services/cleaning-480.webp",
         imageAlt: "Home cleaning professional carefully wiping a living-room table",
         category: "Home Cleaning",
         title: "Premium Cleaning",
-        professional: "NeatNest Home Care",
+        professional: "Sparkle Home Care",
+        providerKey: "sparkle-home-care",
         rating: "4.7",
         reviews: "203",
         distance: "1.8 km",
@@ -56,11 +62,12 @@ const featuredServices = [
         buttonUrl: "/pages/home.html?service=cleaning"
     },
     {
-        image: "/assets/services/car-mechanic.png",
+        image: "/assets/services/car-mechanic-480.webp",
         imageAlt: "Professional car mechanic diagnosing a vehicle in a clean workshop",
         category: "Vehicle Repair",
         title: "Complete Car Care",
         professional: "RK Motors & Service",
+        providerKey: "rk-motors",
         rating: "4.8",
         reviews: "91",
         distance: "5.6 km",
@@ -70,11 +77,12 @@ const featuredServices = [
         buttonUrl: "/pages/home.html?service=car-mechanic"
     },
     {
-        image: "/assets/services/bike-mechanic.png",
+        image: "/assets/services/bike-mechanic-480.webp",
         imageAlt: "Experienced bike mechanic servicing a motorcycle engine",
         category: "Vehicle Repair",
         title: "Bike Service Pro",
-        professional: "TwoWheel Garage",
+        professional: "RoadReady Mechanics",
+        providerKey: "road-ready",
         rating: "4.7",
         reviews: "86",
         distance: "2.7 km",
@@ -101,10 +109,15 @@ function createServiceCard(data) {
     const image = document.createElement("img");
     image.className = "premium-card-image";
     image.src = data.image;
+    image.srcset = `${data.image} 480w, ${data.image.replace("-480.webp", "-960.webp")} 960w`;
+    image.sizes = "(max-width: 680px) 84vw, 560px";
     image.alt = data.imageAlt;
     image.width = 560;
     image.height = 380;
-    image.loading = "lazy";
+    // The carousel overlaps slides with transforms; native lazy loading can
+    // misclassify a newly centred slide as off-screen and leave a blank card.
+    // These WebP files are small, so eager loading is both faster and steadier.
+    image.loading = "eager";
     image.decoding = "async";
     const finishLoading = () => card.classList.remove("is-loading");
     image.addEventListener("load", finishLoading, { once: true });
@@ -118,17 +131,39 @@ function createServiceCard(data) {
     const favourite = document.createElement("button");
     favourite.className = "premium-favourite";
     favourite.type = "button";
-    favourite.setAttribute("aria-label", `Save ${data.title} to favourites`);
-    favourite.setAttribute("aria-pressed", "false");
+    favourite.setAttribute("aria-label", `Save ${data.professional} to favourites`);
+    const favouriteId = data.providerKey;
+    const readFavourites = () => {
+        try { return JSON.parse(localStorage.getItem("localConnectFavourites") || "[]"); }
+        catch { return []; }
+    };
+    const renderFavourite = () => {
+        const saved = readFavourites().some(item => item.id === favouriteId);
+        favourite.classList.toggle("is-saved", saved);
+        favourite.setAttribute("aria-pressed", String(saved));
+        favourite.setAttribute("aria-label", `${saved ? "Remove" : "Save"} ${data.professional} ${saved ? "from" : "to"} favourites`);
+    };
     const heart = createSvgElement("svg", { viewBox: "0 0 24 24", "aria-hidden": "true" });
     heart.appendChild(createSvgElement("path", { d: "M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" }));
     favourite.appendChild(heart);
     favourite.addEventListener("click", event => {
         event.stopPropagation();
-        const saved = favourite.classList.toggle("is-saved");
-        favourite.setAttribute("aria-pressed", String(saved));
-        favourite.setAttribute("aria-label", `${saved ? "Remove" : "Save"} ${data.title} ${saved ? "from" : "to"} favourites`);
+        const favourites = readFavourites();
+        const index = favourites.findIndex(item => item.id === favouriteId);
+        if (index >= 0) favourites.splice(index, 1);
+        else favourites.unshift({
+            id: favouriteId,
+            name: data.professional,
+            type: `${data.title} · ${data.category}`,
+            image: data.image,
+            rating: `★ ${data.rating} (${data.reviews} reviews)`,
+            service: data.category.toLowerCase().replaceAll(" ", "-")
+        });
+        localStorage.setItem("localConnectFavourites", JSON.stringify(favourites));
+        syncResource("favourites", favourites);
+        renderFavourite();
     });
+    renderFavourite();
 
     const mediaActions = document.createElement("div");
     mediaActions.className = "premium-card-actions";
@@ -142,10 +177,10 @@ function createServiceCard(data) {
     verified.innerHTML = '<span aria-hidden="true">✓</span> Verified';
 
     const title = document.createElement("h3");
-    title.textContent = data.title;
+    title.textContent = data.professional;
     const professional = document.createElement("p");
     professional.className = "premium-professional";
-    professional.textContent = data.professional;
+    professional.textContent = `${data.title} · ${data.category}`;
 
     const ratingRow = document.createElement("div");
     ratingRow.className = "premium-rating-row";
@@ -165,26 +200,25 @@ function createServiceCard(data) {
 
     const cta = document.createElement("a");
     cta.className = "premium-card-cta";
-    cta.href = data.buttonUrl;
-    cta.textContent = "Book Now";
+    cta.href = `#professional-${data.providerKey}`;
+    cta.textContent = "View professional";
     cta.addEventListener("click", event => {
         if (cta.classList.contains("is-loading")) {
             event.preventDefault();
             return;
         }
         event.preventDefault();
-        const destination = cta.href;
         cta.classList.add("is-loading");
         cta.setAttribute("aria-disabled", "true");
-        cta.innerHTML = '<span class="button-spinner" aria-hidden="true"></span><span>Booking…</span>';
+        cta.innerHTML = '<span class="button-spinner" aria-hidden="true"></span><span>Loading profile…</span>';
         window.setTimeout(() => {
             cta.classList.remove("is-loading");
-            cta.classList.add("is-success");
-            cta.innerHTML = '<span aria-hidden="true">✓</span><span>Ready</span>';
-            window.setTimeout(() => {
-                window.location.href = destination;
-            }, 450);
-        }, 650);
+            cta.removeAttribute("aria-disabled");
+            cta.textContent = "View professional";
+            window.dispatchEvent(new CustomEvent("localconnect:open-provider", {
+                detail: { providerKey: data.providerKey }
+            }));
+        }, 300);
     });
 
     content.append(verified, title, professional, ratingRow, stats, cta);
@@ -202,7 +236,7 @@ if (premiumCardMount) {
     carousel.tabIndex = 0;
     carousel.setAttribute("role", "region");
     carousel.setAttribute("aria-roledescription", "carousel");
-    carousel.setAttribute("aria-label", "Featured local services");
+    carousel.setAttribute("aria-label", "Recommended local professionals");
 
     const viewport = document.createElement("div");
     viewport.className = "premium-carousel-viewport";
@@ -231,18 +265,18 @@ if (premiumCardMount) {
     const previous = document.createElement("button");
     previous.className = "premium-carousel-button premium-carousel-previous";
     previous.type = "button";
-    previous.setAttribute("aria-label", "Previous featured service");
+    previous.setAttribute("aria-label", "Previous recommended professional");
     previous.innerHTML = '<span aria-hidden="true">‹</span>';
 
     const next = document.createElement("button");
     next.className = "premium-carousel-button premium-carousel-next";
     next.type = "button";
-    next.setAttribute("aria-label", "Next featured service");
+    next.setAttribute("aria-label", "Next recommended professional");
     next.innerHTML = '<span aria-hidden="true">›</span>';
 
     const dots = document.createElement("div");
     dots.className = "premium-carousel-dots";
-    dots.setAttribute("aria-label", "Choose a featured service");
+    dots.setAttribute("aria-label", "Choose a recommended professional");
 
     carousel.append(viewport, previous, next, dots);
     premiumCardMount.appendChild(carousel);
@@ -255,6 +289,7 @@ if (premiumCardMount) {
     let dragFrame;
     let pendingDragX = 0;
     let isHovering = false;
+    const mobileList = window.matchMedia("(max-width: 600px)");
     const autoplayDelay = 2000;
     const interactionResumeDelay = 1500;
     const stateClasses = ["active-center", "side-near-left", "side-near-right", "side-far-left", "side-far-right", "offscreen"];
@@ -262,7 +297,7 @@ if (premiumCardMount) {
     featuredServices.forEach((service, index) => {
         const dot = document.createElement("button");
         dot.type = "button";
-        dot.setAttribute("aria-label", `Show ${service.title}`);
+        dot.setAttribute("aria-label", `Show ${service.professional}`);
         dot.addEventListener("click", () => showService(index), { signal });
         dots.appendChild(dot);
     });
@@ -285,6 +320,16 @@ if (premiumCardMount) {
     }
 
     function updateCarousel() {
+        carousel.classList.toggle("mobile-list", mobileList.matches);
+        if (mobileList.matches) {
+            slides.forEach(slide => {
+                slide.classList.remove(...stateClasses);
+                slide.classList.add("active-center");
+                slide.setAttribute("aria-hidden", "false");
+                slide.inert = false;
+            });
+            return;
+        }
         [...dots.children].forEach((dot, index) => {
             const active = index === activeIndex;
             dot.classList.toggle("active", active);
@@ -328,7 +373,7 @@ if (premiumCardMount) {
     function scheduleAutoplay(delay = autoplayDelay) {
         pauseAutoplay();
         const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (reducedMotion || document.hidden || isHovering || pointerState) return;
+        if (mobileList.matches || reducedMotion || document.hidden || isHovering || pointerState) return;
         autoplayTimer = window.setTimeout(() => goNext(autoplayDelay), delay);
     }
 
@@ -351,6 +396,7 @@ if (premiumCardMount) {
 
     slides.forEach((slide, index) => {
         slide.addEventListener("click", () => {
+            if (mobileList.matches) return;
             if (index !== activeIndex) showService(index);
         }, { signal });
     });
@@ -380,6 +426,7 @@ if (premiumCardMount) {
     }, { signal });
 
     viewport.addEventListener("pointerdown", event => {
+        if (mobileList.matches) return;
         if (event.button !== 0) return;
         pointerState = {
             id: event.pointerId,
@@ -440,6 +487,12 @@ if (premiumCardMount) {
         pauseAutoplay();
         if (dragFrame) window.cancelAnimationFrame(dragFrame);
         if (!event.persisted) abortController.abort();
+    }, { signal });
+    mobileList.addEventListener("change", () => {
+        pauseAutoplay();
+        resetDragPosition();
+        updateCarousel();
+        scheduleAutoplay();
     }, { signal });
 
     updateCarousel();

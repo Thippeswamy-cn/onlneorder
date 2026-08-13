@@ -159,13 +159,10 @@ async function updateAreaName(latitude, longitude) {
 
     locationNameText.textContent = "Finding area name…";
     try {
-        const url = new URL("https://nominatim.openstreetmap.org/reverse");
-        url.searchParams.set("format", "jsonv2");
+        const url = new URL("/api/geocode/reverse", window.location.origin);
         url.searchParams.set("lat", latitude);
         url.searchParams.set("lon", longitude);
-        url.searchParams.set("zoom", "16");
-        url.searchParams.set("addressdetails", "1");
-        url.searchParams.set("accept-language", navigator.language || "en");
+        url.searchParams.set("language", navigator.language || "en");
         const response = await fetch(url, { headers: { Accept: "application/json" } });
         if (!response.ok) throw new Error("Area lookup failed");
         const result = await response.json();
@@ -337,12 +334,9 @@ locationSearch.addEventListener("submit", async event => {
     locationSearchResults.append(loadingMessage);
 
     try {
-        const searchUrl = new URL("https://nominatim.openstreetmap.org/search");
-        searchUrl.searchParams.set("format", "jsonv2");
+        const searchUrl = new URL("/api/geocode/search", window.location.origin);
         searchUrl.searchParams.set("q", query);
-        searchUrl.searchParams.set("limit", "5");
-        searchUrl.searchParams.set("addressdetails", "1");
-        searchUrl.searchParams.set("accept-language", navigator.language || "en");
+        searchUrl.searchParams.set("language", navigator.language || "en");
         const response = await fetch(searchUrl, { headers: { Accept: "application/json" } });
         if (!response.ok) throw new Error("Search failed");
         const results = await response.json();

@@ -10,8 +10,12 @@ async function loadComponent(selector, url) {
 async function startHomePage() {
     try {
         await loadComponent('[data-component="location"]', "/components/location.html");
+        const { hydrateAccountState } = await import("./account-state.js");
+        await hydrateAccountState().catch(error => {
+            console.warn("Account sync is temporarily unavailable:", error.message);
+        });
         await import("./location.js");
-        await import("./home.js");
+        await import("./home.js?v=20260813-3");
         await import("./premium-card.js");
     } catch (error) {
         console.error("LocalConnect failed to start:", error);

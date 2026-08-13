@@ -1,3 +1,5 @@
+import { syncResource } from "./account-state.js";
+
 const themeToggle = document.querySelector(".theme-toggle");
 const savedTheme = localStorage.getItem("localConnectTheme");
 const headerProfile = document.getElementById("header-profile");
@@ -49,7 +51,7 @@ function setNightMode(isNightMode) {
     themeToggle.setAttribute("aria-label", isNightMode ? "Switch to day mode" : "Switch to night mode");
 }
 
-setNightMode(savedTheme === "night");
+setNightMode(savedTheme === "night" || (savedTheme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches));
 
 themeToggle.addEventListener("click", () => {
     const isNightMode = !document.body.classList.contains("night-mode");
@@ -61,12 +63,15 @@ const search = document.getElementById("service-search");
 const serviceSearchForm = document.getElementById("service-search-form");
 const serviceSearchResults = document.getElementById("service-search-results");
 const serviceCards = [...document.querySelectorAll(".category-card")];
+const categoryChips = [...document.querySelectorAll(".category-chips [data-service-chip]")];
+const moreServicesButton = document.getElementById("more-services");
 let providers = [...document.querySelectorAll(".provider-card")];
 const emptyState = document.getElementById("empty-state");
 const providerList = document.getElementById("provider-list");
 const providerSection = document.getElementById("service-professionals");
 const providerSectionHeading = document.getElementById("service-professionals-heading");
 const providerSectionKicker = document.getElementById("provider-section-kicker");
+let currentProviderQuery = "";
 
 function matchesService(element, term) {
     return (
@@ -84,10 +89,29 @@ function filterServices(query) {
 
 function filterProviders(query) {
     const term = query.trim().toLowerCase();
+    currentProviderQuery = term;
+    const minimumRating = Number(document.getElementById("provider-rating-filter")?.value || 0);
+    const availability = document.getElementById("provider-availability-filter")?.value || "all";
+    const verifiedOnly = document.getElementById("provider-verified-filter")?.checked || false;
     providers.forEach(card => {
-        card.classList.toggle("hidden", !matchesService(card, term));
+        const rating = Number(card.querySelector(".rating")?.textContent.match(/[\d.]+/)?.[0] || 0);
+        const availabilityText = card.querySelector(".available")?.textContent.toLowerCase() || "";
+        const matchesAvailability = availability === "all" || availabilityText.includes(availability);
+        const matchesVerified = !verifiedOnly || Boolean(card.querySelector(".verified"));
+        card.classList.toggle("hidden", !(matchesService(card, term) && rating >= minimumRating && matchesAvailability && matchesVerified));
     });
-    emptyState.classList.toggle("hidden", providers.some(card => !card.classList.contains("hidden")));
+    const visible = providers.filter(card => !card.classList.contains("hidden"));
+    emptyState.classList.toggle("hidden", visible.length > 0);
+    const count = document.getElementById("provider-result-count");
+    if (count) count.textContent = `${visible.length} professional${visible.length === 1 ? "" : "s"}`;
+}
+
+function setResponsiveServiceImage(image, source, sizes = "(max-width: 720px) 84vw, 420px") {
+    image.src = source;
+    if (!source.endsWith("-480.webp")) return;
+    image.srcset = `${source} 480w, ${source.replace("-480.webp", "-960.webp")} 960w`;
+    image.sizes = sizes;
+    image.decoding = "async";
 }
 
 function selectService(card) {
@@ -95,6 +119,7 @@ function selectService(card) {
     search.value = serviceName;
     serviceSearchResults.hidden = true;
     serviceCards.forEach(item => item.classList.remove("hidden"));
+    moreServicesButton.classList.remove("is-selected");
     openCategoryDetails(card);
 }
 
@@ -161,6 +186,7 @@ if (requestedService) {
 serviceCards.forEach(card => {
     card.addEventListener("click", event => {
         event.preventDefault();
+        moreServicesButton.classList.remove("is-selected");
         serviceCards.forEach(item => item.classList.toggle("is-selected", item === card));
         openCategoryDetails(card);
     });
@@ -173,16 +199,63 @@ function showAllProviders() {
     emptyState.classList.add("hidden");
     providerSectionHeading.textContent = "All service professionals";
     providerSectionKicker.textContent = "Browse by service";
+    providerSection.hidden = false;
+    document.getElementById("provider-rating-filter").value = "0";
+    document.getElementById("provider-availability-filter").value = "all";
+    document.getElementById("provider-verified-filter").checked = false;
+    document.getElementById("provider-sort").value = "recommended";
+    filterProviders("");
 }
 
 document.getElementById("show-all-providers").addEventListener("click", () => {
     showAllProviders();
     providerSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
-document.getElementById("view-all-services").addEventListener("click", event => {
-    event.preventDefault();
+const allServicesDialog = document.getElementById("all-services-dialog");
+const allServicesGrid = document.getElementById("all-services-grid");
+
+serviceCards.forEach(card => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.setAttribute("aria-label", `View ${card.querySelector("strong").textContent} services`);
+
+    const icon = card.querySelector(".category-icon").cloneNode(true);
+    const copy = document.createElement("span");
+    const title = document.createElement("strong");
+    const description = document.createElement("small");
+    const arrow = document.createElement("span");
+    copy.className = "all-services-copy";
+    title.textContent = card.querySelector("strong").textContent;
+    description.textContent = card.querySelector("small").textContent;
+    arrow.className = "all-services-arrow";
+    arrow.setAttribute("aria-hidden", "true");
+    arrow.textContent = "→";
+    copy.append(title, description);
+    button.append(icon, copy, arrow);
+    button.addEventListener("click", () => {
+        allServicesDialog.close();
+        moreServicesButton.classList.remove("is-selected");
+        serviceCards.forEach(item => item.classList.toggle("is-selected", item === card));
+        openCategoryDetails(card);
+    });
+    allServicesGrid.append(button);
+});
+
+function openAllServices(event) {
+    event?.preventDefault();
+    search.value = "";
+    serviceSearchResults.hidden = true;
     serviceCards.forEach(card => card.classList.remove("hidden", "is-selected"));
-    document.getElementById("categories").scrollIntoView({ behavior: "smooth", block: "start" });
+    categoryChips.forEach(chip => chip.classList.remove("is-selected"));
+    moreServicesButton.classList.add("is-selected");
+    allServicesDialog.showModal();
+}
+
+moreServicesButton.addEventListener("click", openAllServices);
+document.getElementById("view-all-services").addEventListener("click", openAllServices);
+document.getElementById("all-services-close").addEventListener("click", () => allServicesDialog.close());
+allServicesDialog.addEventListener("click", event => {
+    if (event.target === allServicesDialog) allServicesDialog.close();
 });
 
 function configureBookmark(button, card) {
@@ -202,6 +275,7 @@ function configureBookmark(button, card) {
     render();
     button.addEventListener("click", event => {
         event.preventDefault();
+        moreServicesButton.classList.remove("is-selected");
         event.stopPropagation();
         const favourites = readFavourites();
         const index = favourites.findIndex(item => item.id === id);
@@ -210,11 +284,12 @@ function configureBookmark(button, card) {
             id,
             name: heading?.childNodes[0]?.textContent.trim() || heading?.textContent.trim() || "Service professional",
             type: card.querySelector(".professional-title p")?.textContent.trim() || "Local service professional",
-            image: card.querySelector("img")?.getAttribute("src") || "/assets/services/plumber.png",
+            image: card.querySelector("img")?.getAttribute("src") || "/assets/services/plumber-480.webp",
             rating: card.querySelector(".rating")?.textContent.trim() || "Verified professional",
             service: (card.dataset.service || "").split(" ")[0]
         });
         localStorage.setItem("localConnectFavourites", JSON.stringify(favourites));
+        syncResource("favourites", favourites);
         render();
     });
 }
@@ -225,7 +300,7 @@ const providerProfiles = {
     "sri-sai": {
         name: "Sri Sai Plumbing Works", type: "Plumbing service",
         speciality: "Leaks, taps, pipes, bathroom fittings and installations",
-        image: "/assets/services/plumber.png", rating: "★ 4.8 (126 reviews)",
+        image: "/assets/services/plumber-480.webp", rating: "★ 4.8 (126 reviews)",
         distance: "2.1 km away", availability: "Available today",
         about: "A verified local plumbing team for household repairs, installations and urgent water leaks. You receive a price confirmation before work begins.",
         facts: [["Experience", "8+ years"], ["Jobs completed", "640+"], ["Service warranty", "30 days"]],
@@ -236,7 +311,7 @@ const providerProfiles = {
     "rk-motors": {
         name: "RK Motors & Service", type: "Vehicle repair service",
         speciality: "Car and bike diagnostics, servicing and mechanical repair",
-        image: "/assets/services/car-mechanic.png", rating: "★ 4.7 (89 reviews)",
+        image: "/assets/services/car-mechanic-480.webp", rating: "★ 4.7 (89 reviews)",
         distance: "4.5 km away", availability: "Available today",
         about: "A multi-brand vehicle workshop providing routine maintenance, fault diagnosis and repair for cars and motorcycles, with approval required for replacement parts.",
         facts: [["Experience", "11+ years"], ["Vehicles serviced", "1,200+"], ["Service warranty", "15 days"]],
@@ -247,7 +322,7 @@ const providerProfiles = {
     "davangere-electricals": {
         name: "Davangere Electricals", type: "Electrical service",
         speciality: "Wiring, switches, lighting, fans and electrical safety checks",
-        image: "/assets/services/electrician.png", rating: "★ 4.9 (74 reviews)",
+        image: "/assets/services/electrician-480.webp", rating: "★ 4.9 (74 reviews)",
         distance: "3.2 km away", availability: "Available now",
         about: "A certified electrician for safe home repairs and installations. All work is checked before completion, and any extra material cost is explained in advance.",
         facts: [["Experience", "9+ years"], ["Jobs completed", "510+"], ["Service warranty", "30 days"]],
@@ -258,7 +333,7 @@ const providerProfiles = {
     "sparkle-home-care": {
         name: "Sparkle Home Care", type: "Home cleaning service",
         speciality: "Regular cleaning, deep cleaning, kitchens and bathrooms",
-        image: "/assets/services/cleaning.png", rating: "★ 4.8 (112 reviews)",
+        image: "/assets/services/cleaning-480.webp", rating: "★ 4.8 (112 reviews)",
         distance: "2.8 km away", availability: "Available today",
         about: "A trained cleaning team for routine and intensive home cleaning. Choose the rooms you need and see the labour price before confirming.",
         facts: [["Experience", "6+ years"], ["Homes cleaned", "870+"], ["Service warranty", "3 days"]],
@@ -269,7 +344,7 @@ const providerProfiles = {
     "cooltech": {
         name: "CoolTech Appliance Care", type: "Appliance repair service",
         speciality: "AC, refrigerator, washing machine and small appliance repair",
-        image: "/assets/services/ac-repair.png", rating: "★ 4.7 (96 reviews)",
+        image: "/assets/services/ac-repair-480.webp", rating: "★ 4.7 (96 reviews)",
         distance: "3.7 km away", availability: "Available today",
         about: "A multi-appliance technician offering fault checks, servicing and repair. Spare parts are charged separately only after your approval.",
         facts: [["Experience", "10+ years"], ["Repairs completed", "930+"], ["Service warranty", "30 days"]],
@@ -280,7 +355,7 @@ const providerProfiles = {
     "glow-at-home": {
         name: "Glow at Home", type: "Beauty service",
         speciality: "Hair, skincare, makeup and salon treatments at home",
-        image: "/assets/services/cleaning.png", rating: "★ 4.9 (138 reviews)",
+        image: "/assets/services/cleaning-480.webp", rating: "★ 4.9 (138 reviews)",
         distance: "2.5 km away", availability: "Available tomorrow",
         about: "Professional salon services delivered at home with sanitized tools and single-use essentials. Select individual treatments or a complete package.",
         facts: [["Experience", "7+ years"], ["Appointments", "1,050+"], ["Hygiene", "Certified"]],
@@ -291,7 +366,7 @@ const providerProfiles = {
     "safemove": {
         name: "SafeMove Packers", type: "Moving service",
         speciality: "Packing, loading, transport and local household shifting",
-        image: "/assets/services/car-mechanic.png", rating: "★ 4.6 (67 reviews)",
+        image: "/assets/services/car-mechanic-480.webp", rating: "★ 4.6 (67 reviews)",
         distance: "5.1 km away", availability: "Available tomorrow",
         about: "A careful local moving crew for rooms, apartments and small offices. A survey confirms the final price based on distance and load.",
         facts: [["Experience", "9+ years"], ["Moves completed", "480+"], ["Damage cover", "Included"]],
@@ -302,7 +377,7 @@ const providerProfiles = {
     "rapid-help": {
         name: "Rapid Help 24/7", type: "Emergency service",
         speciality: "Urgent plumbing, electrical and roadside assistance",
-        image: "/assets/services/plumber.png", rating: "★ 4.8 (81 reviews)",
+        image: "/assets/services/plumber-480.webp", rating: "★ 4.8 (81 reviews)",
         distance: "3.0 km away", availability: "Available now",
         about: "Fast dispatch for urgent household faults and roadside problems. The call-out fee covers arrival and diagnosis; repair costs are confirmed on site.",
         facts: [["Response time", "30–60 min"], ["Cases handled", "720+"], ["Availability", "24/7"]],
@@ -360,7 +435,7 @@ additionalProviders.forEach(provider => {
     const reviewText = provider.rating.match(/\(([^)]+)\)/)?.[1] || "New";
     const ratingText = provider.rating.split(" (")[0];
     card.innerHTML = `
-        <img src="${base.image}" alt="${provider.name} service professional" loading="lazy">
+        <img src="${base.image}" srcset="${base.image} 480w, ${base.image.replace("-480.webp", "-960.webp")} 960w" sizes="(max-width: 720px) 84vw, 360px" alt="${provider.name} service professional" loading="lazy" decoding="async">
         <div class="professional-main">
             <div class="professional-title">
                 <div><h3>${provider.name} <span class="demo-profile-badge">Demo</span></h3><p>${base.type}</p></div>
@@ -384,6 +459,30 @@ additionalProviders.forEach(provider => {
 providers = [...document.querySelectorAll(".provider-card")];
 if (search.value) filterProviders(search.value);
 
+function sortProviders() {
+    const sortBy = document.getElementById("provider-sort").value;
+    const valueFrom = (card, selector) => Number(card.querySelector(selector)?.textContent.match(/[\d.]+/)?.[0] || 0);
+    const sorted = [...providers].sort((first, second) => {
+        if (sortBy === "rating") return valueFrom(second, ".rating") - valueFrom(first, ".rating");
+        if (sortBy === "price") return valueFrom(first, ".professional-footer > strong") - valueFrom(second, ".professional-footer > strong");
+        if (sortBy === "distance") return valueFrom(first, ".professional-meta > span:nth-child(2)") - valueFrom(second, ".professional-meta > span:nth-child(2)");
+        return providers.indexOf(first) - providers.indexOf(second);
+    });
+    sorted.forEach(card => providerList.append(card));
+}
+
+["provider-rating-filter", "provider-availability-filter", "provider-verified-filter"].forEach(id => {
+    document.getElementById(id).addEventListener("change", () => filterProviders(currentProviderQuery));
+});
+document.getElementById("provider-sort").addEventListener("change", sortProviders);
+document.getElementById("mobile-filter-toggle").addEventListener("click", event => {
+    const expanded = event.currentTarget.getAttribute("aria-expanded") === "true";
+    event.currentTarget.setAttribute("aria-expanded", String(!expanded));
+    event.currentTarget.querySelector("b").textContent = expanded ? "＋" : "−";
+    document.getElementById("results-toolbar").classList.toggle("is-open", !expanded);
+});
+filterProviders("");
+
 const categoryDetailDialog = document.getElementById("category-detail-dialog");
 const categoryDetailClose = document.getElementById("category-detail-close");
 const categoryServiceList = document.getElementById("category-service-list");
@@ -404,9 +503,15 @@ function openCategoryDetails(card) {
     const baseProfile = providerProfiles[categoryProfileMap[categoryKey]];
     if (!baseProfile) return;
     const categoryName = card.querySelector("strong").textContent;
+    providerSection.hidden = false;
+    providerSectionHeading.textContent = `${categoryName} professionals`;
+    providerSectionKicker.textContent = "Compare verified local experts";
+    filterProviders(categoryKey);
     document.getElementById("category-detail-title").textContent = categoryName;
     document.getElementById("category-detail-description").textContent = card.querySelector("small").textContent;
-    document.getElementById("category-detail-icon").textContent = card.querySelector(".category-icon").textContent;
+    document.getElementById("category-detail-icon").replaceChildren(
+        card.querySelector(".category-icon img").cloneNode(true)
+    );
     document.getElementById("category-provider-heading").textContent = `${categoryName} professionals`;
 
     categoryServiceList.replaceChildren(...baseProfile.services.map(([service, price]) => {
@@ -446,7 +551,7 @@ function openCategoryDetails(card) {
         const actions = document.createElement("div");
         const profileButton = document.createElement("button");
         const bookButton = document.createElement("button");
-        image.src = profile.image;
+        setResponsiveServiceImage(image, profile.image, "96px");
         image.alt = `${profile.name} professional`;
         name.textContent = profile.name;
         meta.textContent = `${profile.rating} · ${profile.distance}`;
@@ -490,8 +595,9 @@ function fillProviderProfile(profile) {
         document.getElementById(`service-profile-${field}`).textContent = profile[field];
     });
     document.getElementById("service-profile-starting-price").textContent = profile.startingPrice;
+    document.getElementById("service-profile-review-summary").textContent = profile.rating;
     const image = document.getElementById("service-profile-image");
-    image.src = profile.image;
+    setResponsiveServiceImage(image, profile.image, "(max-width: 720px) 92vw, 460px");
     image.alt = `${profile.name} professional`;
 
     const facts = document.getElementById("service-profile-facts");
@@ -558,6 +664,13 @@ profileBook.addEventListener("click", () => {
     openBookingStep(activeProfile);
 });
 
+window.addEventListener("localconnect:open-provider", event => {
+    const profile = providerProfiles[event.detail?.providerKey];
+    if (!profile) return;
+    fillProviderProfile(profile);
+    profileDialog.showModal();
+});
+
 const bookingDialog = document.getElementById("booking-step-dialog");
 const bookingForm = document.getElementById("booking-service-form");
 const bookingOptions = document.getElementById("booking-service-options");
@@ -582,7 +695,7 @@ function showBookingStep(step) {
         item.classList.toggle("active", index === Math.min(step - 1, 3));
         item.classList.toggle("completed", index < step - 1);
     });
-    document.getElementById("booking-step-title").textContent = step === 5 ? "Booking confirmed" : bookingTitles[Math.min(step - 1, 3)];
+    document.getElementById("booking-step-title").textContent = step === 5 ? "Booking request saved" : bookingTitles[Math.min(step - 1, 3)];
     bookingDialog.scrollTop = 0;
 }
 
@@ -621,7 +734,7 @@ function openBookingStep(profile) {
     document.getElementById("booking-service-type").textContent = profile.type;
     document.getElementById("booking-provider-rating").textContent = profile.rating;
     const image = document.getElementById("booking-provider-image");
-    image.src = profile.image;
+    setResponsiveServiceImage(image, profile.image, "72px");
     image.alt = `${profile.name} professional`;
     populateBookingDates();
     const savedAddress = JSON.parse(localStorage.getItem("localConnectSavedAddress") || "null");
@@ -713,7 +826,20 @@ addressForm.addEventListener("submit", event => {
     bookingDraft.address = `${values.street}, ${values.area}, ${values.city}, ${values.state} ${values.pin}`;
     bookingDraft.addressLabel = values.addressLabel;
     bookingDraft.landmark = values.landmark || "";
-    if (addressForm.elements.saveAddress.checked) localStorage.setItem("localConnectSavedAddress", JSON.stringify(values));
+    if (addressForm.elements.saveAddress.checked) {
+        localStorage.setItem("localConnectSavedAddress", JSON.stringify(values));
+        let addresses = [];
+        try { addresses = JSON.parse(localStorage.getItem("localConnectAddresses") || "[]"); } catch { addresses = []; }
+        const savedAddress = {
+            ...values,
+            id: `address-${Date.now()}`,
+            label: values.addressLabel || "Home"
+        };
+        delete savedAddress.saveAddress;
+        addresses.unshift(savedAddress);
+        localStorage.setItem("localConnectAddresses", JSON.stringify(addresses));
+        syncResource("addresses", addresses);
+    }
     renderBookingReview();
     showBookingStep(4);
 });
@@ -754,6 +880,7 @@ reviewForm.addEventListener("submit", event => {
     const bookings = JSON.parse(localStorage.getItem("localConnectBookings") || "[]");
     bookings.unshift(bookingDraft);
     localStorage.setItem("localConnectBookings", JSON.stringify(bookings));
+    syncResource("bookings", bookings);
     document.getElementById("booking-receipt").replaceChildren(
         createReviewRow("Booking ID", bookingDraft.id),
         createReviewRow("Service", bookingDraft.service),
@@ -842,8 +969,6 @@ if (bottomNav) {
     window.addEventListener("pagehide", cleanupBottomNav, { once: true });
 }
 
-const categoryChips = [...document.querySelectorAll(".category-chips a")];
-
 categoryChips.forEach(chip => {
     chip.addEventListener("click", event => {
         const url = new URL(chip.href, window.location.href);
@@ -851,6 +976,7 @@ categoryChips.forEach(chip => {
         if (!service) return;
 
         event.preventDefault();
+        moreServicesButton.classList.remove("is-selected");
         categoryChips.forEach(item => item.classList.toggle("is-selected", item === chip));
         search.value = service.replaceAll("-", " ");
         const matchingCategory = serviceCards.find(card => matchesService(card, search.value));

@@ -26,7 +26,11 @@ async function apiRequest(path, body) {
     try {
         const response = await fetch(`${API_URL}${path}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Requested-With": "LocalConnect"
+            },
             body: JSON.stringify(body)
         });
         const data = await response.json();
@@ -142,7 +146,7 @@ if (loginForm) {
             localStorage.setItem("localConnectUser", data.name || "User");
             localStorage.setItem("localConnectProfile", JSON.stringify({
                 name: data.name || "User",
-                email: email.value.trim()
+                email: data.email || email.value.trim()
             }));
             setTimeout(() => {
                 window.location.href = "/pages/home.html";

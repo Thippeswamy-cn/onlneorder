@@ -5,10 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Book trusted local services in Davangere, Karnataka">
     <title>LocalConnect — Trusted local services</title>
-    <link rel="stylesheet" href="/css/home.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23635BFF'/%3E%3Cpath d='M19 15h9v26h18v8H19z' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/css/home.css?v=20260813-3">
     <link rel="stylesheet" href="/css/premium-card.css">
+    <link rel="stylesheet" href="/css/design-system.css">
 </head>
-<body>
+<body class="marketplace-page">
     <header class="site-header">
         <div class="header-main page-container">
             <a class="brand" href="/pages/home.html" aria-label="LocalConnect home">
@@ -16,43 +18,41 @@
                 <span>Local<strong>Connect</strong></span>
             </a>
 
-            <button class="header-location" id="location-button" type="button" aria-label="Show my live location" aria-haspopup="dialog">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <nav class="header-category-nav" aria-label="Service categories">
+                <a href="/pages/home.html?service=cleaning">Home services</a>
+                <a href="/pages/home.html?service=vehicle-repair">Vehicle care</a>
+                <a href="/pages/home.html?service=beauty">Beauty</a>
+            </nav>
+
+            <button class="header-location" id="location-button" type="button" aria-label="Choose service location" aria-haspopup="dialog">
+                <img class="ui-icon" src="/assets/icons/lucide/map-pin.svg" alt="" aria-hidden="true">
                 <span><small>Location</small><strong id="location-summary">Use current location</strong></span>
-                <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 10 3 3 3-3"/></svg>
+                <img class="chevron ui-icon" src="/assets/icons/lucide/chevron-down.svg" alt="" aria-hidden="true">
             </button>
 
             <form class="header-search" id="service-search-form" role="search">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-                <label class="sr-only" for="service-search">Search services</label>
-                <input id="service-search" type="search" placeholder="What service do you need?" autocomplete="off">
+                <img class="ui-icon" src="/assets/icons/lucide/search.svg" alt="" aria-hidden="true">
+                <label class="sr-only" for="service-search">Search for a service</label>
+                <span class="search-field-copy"><small>Search services</small><input id="service-search" type="search" placeholder="Search for ‘plumbing’" autocomplete="off"></span>
                 <button class="service-search-button" id="service-search-button" type="submit">Search</button>
                 <div class="service-search-results" id="service-search-results" role="listbox" aria-label="Matching services" hidden></div>
             </form>
 
             <div class="header-actions">
                 <button class="theme-toggle icon-button" type="button" aria-label="Switch to night mode" aria-pressed="false">
-                    <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.3A8.5 8.5 0 0 1 9.7 3.5 8.5 8.5 0 1 0 20.5 14.3Z"/></svg>
-                    <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                    <img class="moon-icon ui-icon" src="/assets/icons/lucide/moon.svg" alt="" aria-hidden="true">
+                    <img class="sun-icon ui-icon" src="/assets/icons/lucide/sun.svg" alt="" aria-hidden="true">
                 </button>
                 <button class="notification-button icon-button" type="button" aria-label="Notifications">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+                    <img class="ui-icon" src="/assets/icons/lucide/bell.svg" alt="" aria-hidden="true">
                     <span></span>
                 </button>
                 <a class="sign-in-button" id="header-profile" href="/pages/index.html">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                    <img class="ui-icon" src="/assets/icons/lucide/user-round.svg" alt="" aria-hidden="true">
                     <span>Sign In</span>
                 </a>
             </div>
         </div>
-
-        <nav class="desktop-nav page-container" aria-label="Primary navigation">
-            <a class="active" href="/pages/home.html">Home</a>
-            <a href="#categories">Services</a>
-            <a href="#messages">Messages</a>
-            <a href="/pages/customer-dashboard.html#favourites">Favourites</a>
-            <a href="/pages/customer-dashboard.html" id="desktop-profile-link">Profile</a>
-        </nav>
     </header>
 
     <div data-component="location" aria-live="polite"></div>
@@ -89,6 +89,10 @@
             <section>
                 <span class="section-kicker">Included with every booking</span>
                 <ul class="service-inclusions" id="service-profile-inclusions"></ul>
+            </section>
+            <section class="service-profile-proof">
+                <div><span class="section-kicker">Reviews</span><strong id="service-profile-review-summary">Customer rating</strong><p>Ratings shown are based on the marketplace profile data available for this professional.</p></div>
+                <div><span class="section-kicker">Trust &amp; verification</span><strong>Verified LocalConnect profile</strong><p>Identity and service details are reviewed before the verified badge is displayed.</p></div>
             </section>
         </div>
         <div class="service-profile-footer">
@@ -162,24 +166,24 @@
                 <label><span>PIN code</span><input name="pin" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" required placeholder="577001"></label>
                 <label class="wide"><span>Landmark <small>(optional)</small></span><input name="landmark" placeholder="Nearby landmark"></label>
             </div>
-            <label class="booking-urgent"><input name="saveAddress" type="checkbox" checked><span><strong>Save this address on this device</strong><small>Use it for faster demo bookings later</small></span></label>
+            <label class="booking-urgent"><input name="saveAddress" type="checkbox" checked><span><strong>Save this address on this device</strong><small>Use it for faster booking requests later</small></span></label>
             <div class="booking-navigation"><button class="secondary-button large" data-booking-back="2" type="button">Back</button><button class="primary-button large" type="submit">Review booking →</button></div>
         </form>
         <form class="booking-panel" id="booking-review-form" hidden>
             <h3>Review and confirm</h3>
-            <p class="booking-panel-intro">Check the details before placing your demo booking.</p>
+            <p class="booking-panel-intro">Check every detail and the estimated total before saving your request.</p>
             <div class="booking-review-card" id="booking-review-details"></div>
             <fieldset class="booking-payment-options"><legend>Payment method</legend>
                 <label><input type="radio" name="payment" value="Pay after service" checked><span>₹<b>Pay after service</b><small>Cash or UPI after completion</small></span></label>
-                <label><input type="radio" name="payment" value="UPI"><span>U<b>UPI</b><small>Demo online payment</small></span></label>
-                <label><input type="radio" name="payment" value="Card"><span>▣<b>Card</b><small>Credit or debit card</small></span></label>
+                <label class="is-disabled"><input type="radio" name="payment" value="UPI" disabled><span>U<b>UPI</b><small>Online payment coming soon</small></span></label>
+                <label class="is-disabled"><input type="radio" name="payment" value="Card" disabled><span>▣<b>Card</b><small>Online payment coming soon</small></span></label>
             </fieldset>
             <label class="booking-consent"><input type="checkbox" required><span>I agree to the cancellation policy and understand that parts or additional work require separate approval.</span></label>
-            <div class="booking-navigation"><button class="secondary-button large" data-booking-back="3" type="button">Back</button><button class="primary-button large" type="submit">Confirm demo booking</button></div>
+            <div class="booking-navigation"><button class="secondary-button large" data-booking-back="3" type="button">Back</button><button class="primary-button large" type="submit">Save booking request</button></div>
         </form>
         <section class="booking-panel booking-success" id="booking-success-panel" hidden>
-            <span class="booking-success-icon">✓</span><span class="section-kicker">Booking confirmed</span>
-            <h3>Your service is scheduled</h3><p>A demo confirmation has been saved on this device.</p>
+            <span class="booking-success-icon">✓</span><span class="section-kicker">Request saved</span>
+            <h3>Your booking request is ready</h3><p>This prototype stores the request on this device. It has not been sent to the professional or a payment service.</p>
             <div class="booking-receipt" id="booking-receipt"></div>
             <div class="booking-help-row"><span><b>What happens next?</b><small>The professional reviews the request and contacts you before arrival.</small></span><span><b>Need help?</b><small>Use Messages or call customer support from your booking.</small></span></div>
             <button class="primary-button large booking-continue" id="booking-finish" type="button">Done</button>
@@ -209,29 +213,49 @@
         </div>
     </dialog>
 
+    <dialog class="all-services-dialog" id="all-services-dialog" aria-labelledby="all-services-title">
+        <div class="all-services-panel">
+            <header class="all-services-header">
+                <div>
+                    <span class="section-kicker">Complete catalogue</span>
+                    <h2 id="all-services-title">All services</h2>
+                    <p>Choose a category to see its services, prices and available professionals.</p>
+                </div>
+                <button class="all-services-close" id="all-services-close" type="button" aria-label="Close all services">&times;</button>
+            </header>
+            <div class="all-services-grid" id="all-services-grid"></div>
+        </div>
+    </dialog>
+
     <main>
         <section class="hero page-container" aria-labelledby="hero-heading">
-            <p class="eyebrow">Trusted services in Davangere</p>
-            <h1 id="hero-heading">Book trusted local services near you</h1>
-            <p>Compare verified professionals, check ratings and book instantly.</p>
+            <p class="eyebrow">Verified professionals. Clear prices. Local expertise.</p>
+            <h1 id="hero-heading">Trusted local professionals, just a booking away.</h1>
+            <p>Find verified professionals for cleaning, plumbing, electrical repairs and more — all in one place.</p>
+            <ul class="hero-trust" aria-label="Why customers trust LocalConnect">
+                <li><span>✓</span> Verified professionals</li>
+                <li><span>✓</span> Transparent pricing</li>
+                <li><span>✓</span> Secure booking</li>
+                <li><span>✓</span> Local support</li>
+            </ul>
             <div class="category-chips" aria-label="Popular service categories">
-                <a href="/pages/home.html?service=plumbing">Plumbing</a>
-                <a href="/pages/home.html?service=electrical">Electrical</a>
-                <a href="/pages/home.html?service=cleaning">Cleaning</a>
-                <a href="/pages/home.html?service=vehicle-repair">Vehicle Repair</a>
-                <a href="/pages/home.html?service=appliance-repair">Appliance Repair</a>
-                <a href="/pages/home.html?service=beauty">Beauty</a>
-                <a href="#categories">More Services</a>
+                <a class="category-chip" data-service-chip href="/pages/home.html?service=plumbing">Plumbing</a>
+                <a class="category-chip" data-service-chip href="/pages/home.html?service=electrical">Electrical</a>
+                <a class="category-chip" data-service-chip href="/pages/home.html?service=cleaning">Cleaning</a>
+                <a class="category-chip" data-service-chip href="/pages/home.html?service=vehicle-repair">Vehicle Repair</a>
+                <a class="category-chip" data-service-chip href="/pages/home.html?service=appliance-repair">Appliance Repair</a>
+                <a class="category-chip" data-service-chip href="/pages/home.html?service=beauty">Beauty</a>
+                <button class="category-chip" id="more-services" type="button" aria-haspopup="dialog" aria-controls="all-services-dialog">More Services</button>
             </div>
         </section>
 
         <section class="featured-section" aria-labelledby="featured-heading">
             <div class="section-heading page-container">
                 <div>
-                    <span class="section-kicker">Hand-picked for you</span>
-                    <h2 id="featured-heading">Featured services</h2>
+                    <span class="section-kicker">Recommended professionals</span>
+                    <h2 id="featured-heading">Top-rated experts near you</h2>
                 </div>
-                <p>Highly rated professionals available near Davangere</p>
+                <p>Compare trusted providers by ratings, experience, arrival time and starting price.</p>
             </div>
             <div id="premium-service-card"></div>
         </section>
@@ -239,17 +263,17 @@
         <section class="content-section page-container" id="categories" aria-labelledby="categories-heading">
             <div class="section-heading">
                 <div><span class="section-kicker">Explore services</span><h2 id="categories-heading">Popular categories</h2></div>
-                <a id="view-all-services" href="#categories">View all services</a>
+                <a id="view-all-services" href="#categories" aria-haspopup="dialog" aria-controls="all-services-dialog">View all services</a>
             </div>
             <div class="category-grid">
-                <a class="category-card" data-service="plumbing plumber pipe tap leak" href="/pages/home.html?service=plumbing"><img class="category-photo" src="/assets/services/plumber.png" alt="Professional plumbing service" loading="lazy"><span class="category-icon">🔧</span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
-                <a class="category-card" data-service="electrical electrician wiring light" href="/pages/home.html?service=electrical"><img class="category-photo" src="/assets/services/electrician.png" alt="Professional electrical service" loading="lazy"><span class="category-icon">⚡</span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
-                <a class="category-card" data-service="cleaning cleaner housekeeping deep clean" href="/pages/home.html?service=cleaning"><img class="category-photo" src="/assets/services/cleaning.png" alt="Professional home cleaning service" loading="lazy"><span class="category-icon">✨</span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
-                <a class="category-card" data-service="vehicle repair car bike mechanic garage" href="/pages/home.html?service=vehicle-repair"><img class="category-photo" src="/assets/services/car-mechanic.png" alt="Professional vehicle repair service" loading="lazy"><span class="category-icon">🚗</span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
-                <a class="category-card" data-service="appliance repair ac refrigerator fridge washer" href="/pages/home.html?service=appliance-repair"><img class="category-photo" src="/assets/services/ac-repair.png" alt="Professional appliance repair service" loading="lazy"><span class="category-icon">🔌</span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
-                <a class="category-card" data-service="beauty salon haircut makeup spa" href="/pages/home.html?service=beauty"><img class="category-photo" src="/assets/services/beauty-service.png" alt="Professional at-home beauty service" loading="lazy"><span class="category-icon">✂️</span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
-                <a class="category-card" data-service="moving movers packing delivery shifting" href="/pages/home.html?service=moving"><img class="category-photo" src="/assets/services/moving-service.png" alt="Professional moving service" loading="lazy"><span class="category-icon">📦</span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
-                <a class="category-card" data-service="emergency urgent help" href="/pages/home.html?service=emergency"><img class="category-photo" src="/assets/services/emergency-service.png" alt="Professional emergency home service" loading="lazy"><span class="category-icon">🛟</span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
+                <a class="category-card" data-service="plumbing plumber pipe tap leak" href="/pages/home.html?service=plumbing"><img class="category-photo" src="/assets/services/plumber-480.webp" alt="Professional plumbing service" width="480" height="270" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/wrench.svg" alt="" aria-hidden="true"></span><strong>Plumbing</strong><small>Leaks, taps and pipe repairs</small></a>
+                <a class="category-card" data-service="electrical electrician wiring light" href="/pages/home.html?service=electrical"><img class="category-photo" src="/assets/services/electrician-480.webp" alt="Professional electrical service" width="480" height="480" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/zap.svg" alt="" aria-hidden="true"></span><strong>Electrical</strong><small>Wiring, fixtures and safety checks</small></a>
+                <a class="category-card" data-service="cleaning cleaner housekeeping deep clean" href="/pages/home.html?service=cleaning"><img class="category-photo" src="/assets/services/cleaning-480.webp" alt="Professional home cleaning service" width="480" height="270" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/sparkles.svg" alt="" aria-hidden="true"></span><strong>Home Cleaning</strong><small>Regular and deep home cleaning</small></a>
+                <a class="category-card" data-service="vehicle repair car bike mechanic garage" href="/pages/home.html?service=vehicle-repair"><img class="category-photo" src="/assets/services/car-mechanic-480.webp" alt="Professional vehicle repair service" width="480" height="270" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/car-front.svg" alt="" aria-hidden="true"></span><strong>Vehicle Repair</strong><small>Car and bike service near you</small></a>
+                <a class="category-card" data-service="appliance repair ac refrigerator fridge washer" href="/pages/home.html?service=appliance-repair"><img class="category-photo" src="/assets/services/ac-repair-480.webp" alt="Professional appliance repair service" width="480" height="270" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/air-vent.svg" alt="" aria-hidden="true"></span><strong>Appliance Repair</strong><small>AC, refrigerator and washer care</small></a>
+                <a class="category-card" data-service="beauty salon haircut makeup spa" href="/pages/home.html?service=beauty"><img class="category-photo" src="/assets/services/beauty-service-480.webp" alt="Professional at-home beauty service" width="480" height="270" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/scissors.svg" alt="" aria-hidden="true"></span><strong>Beauty Services</strong><small>Salon services in your home</small></a>
+                <a class="category-card" data-service="moving movers packing delivery shifting" href="/pages/home.html?service=moving"><img class="category-photo" src="/assets/services/moving-service-480.webp" alt="Professional moving service" width="480" height="274" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/package-open.svg" alt="" aria-hidden="true"></span><strong>Moving Services</strong><small>Careful packing and local moves</small></a>
+                <a class="category-card" data-service="emergency urgent help" href="/pages/home.html?service=emergency"><img class="category-photo" src="/assets/services/emergency-service-480.webp" alt="Professional emergency home service" width="480" height="263" loading="lazy" decoding="async"><span class="category-icon"><img src="/assets/icons/lucide/siren.svg" alt="" aria-hidden="true"></span><strong>Emergency Services</strong><small>Fast help when you need it</small></a>
             </div>
         </section>
 
@@ -258,9 +282,17 @@
                 <div><span class="section-kicker" id="provider-section-kicker">Browse by service</span><h2 id="service-professionals-heading">All service professionals</h2></div>
                 <button class="text-button" id="show-all-providers" type="button">Show all</button>
             </div>
+            <button class="mobile-filter-toggle" id="mobile-filter-toggle" type="button" aria-controls="results-toolbar" aria-expanded="false"><span>Filters &amp; sorting</span><small>Refine results</small><b aria-hidden="true">＋</b></button>
+            <div class="results-toolbar" id="results-toolbar" aria-label="Filter and sort professionals">
+                <div class="results-summary"><strong id="provider-result-count">0 professionals</strong><small>Verified service partners near Davangere</small></div>
+                <label><span>Minimum rating</span><select id="provider-rating-filter"><option value="0">Any rating</option><option value="4.8">4.8 and above</option><option value="4.7">4.7 and above</option></select></label>
+                <label><span>Availability</span><select id="provider-availability-filter"><option value="all">Any time</option><option value="now">Available now</option><option value="today">Available today</option><option value="tomorrow">Available tomorrow</option></select></label>
+                <label><span>Sort by</span><select id="provider-sort"><option value="recommended">Recommended</option><option value="rating">Highest rated</option><option value="price">Price: low to high</option><option value="distance">Nearest</option></select></label>
+                <label class="verified-filter"><input id="provider-verified-filter" type="checkbox"><span>Verified only</span></label>
+            </div>
             <div class="professional-list" id="provider-list">
                 <article class="professional-card provider-card" data-service="plumber plumbing">
-                    <img src="/assets/services/plumber.png" alt="Sri Sai plumbing professional" loading="lazy">
+                    <img src="/assets/services/plumber-480.webp" alt="Sri Sai plumbing professional" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Sri Sai Plumbing Works <span class="verified" aria-label="Verified professional">✓</span></h3><p>Plumbing specialist</p></div><button class="bookmark" type="button" aria-label="Save Sri Sai Plumbing Works">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.8 <small>(126 reviews)</small></span><span>2.1 km away</span><span class="available"><i></i> Available today</span></div>
@@ -268,7 +300,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="car vehicle mechanic repair">
-                    <img src="/assets/services/car-mechanic.png" alt="RK Motors vehicle repair professional" loading="lazy">
+                    <img src="/assets/services/car-mechanic-480.webp" alt="RK Motors vehicle repair professional" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>RK Motors &amp; Service <span class="verified" aria-label="Verified professional">✓</span></h3><p>Car and bike mechanic</p></div><button class="bookmark" type="button" aria-label="Save RK Motors and Service">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.7 <small>(89 reviews)</small></span><span>4.5 km away</span><span class="available"><i></i> Available today</span></div>
@@ -276,7 +308,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="electrician electrical">
-                    <img src="/assets/services/electrician.png" alt="Davangere electrical service professional" loading="lazy">
+                    <img src="/assets/services/electrician-480.webp" alt="Davangere electrical service professional" width="480" height="480" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Davangere Electricals <span class="verified" aria-label="Verified professional">✓</span></h3><p>Certified electrician</p></div><button class="bookmark" type="button" aria-label="Save Davangere Electricals">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.9 <small>(74 reviews)</small></span><span>3.2 km away</span><span class="available"><i></i> Available now</span></div>
@@ -284,7 +316,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="cleaning cleaner housekeeping deep clean">
-                    <img src="/assets/services/cleaning.png" alt="Sparkle Home Care cleaning professional" loading="lazy">
+                    <img src="/assets/services/cleaning-480.webp" alt="Sparkle Home Care cleaning professional" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Sparkle Home Care <span class="verified" aria-label="Verified professional">✓</span></h3><p>Home cleaning specialists</p></div><button class="bookmark" type="button" aria-label="Save Sparkle Home Care">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.8 <small>(112 reviews)</small></span><span>2.8 km away</span><span class="available"><i></i> Available today</span></div>
@@ -292,7 +324,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="appliance repair ac refrigerator fridge washer">
-                    <img src="/assets/services/ac-repair.png" alt="CoolTech appliance repair professional" loading="lazy">
+                    <img src="/assets/services/ac-repair-480.webp" alt="CoolTech appliance repair professional" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>CoolTech Appliance Care <span class="verified" aria-label="Verified professional">✓</span></h3><p>AC and appliance technician</p></div><button class="bookmark" type="button" aria-label="Save CoolTech Appliance Care">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.7 <small>(96 reviews)</small></span><span>3.7 km away</span><span class="available"><i></i> Available today</span></div>
@@ -300,7 +332,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="beauty salon haircut makeup spa">
-                    <img src="/assets/services/cleaning.png" alt="Glow at Home beauty professional" loading="lazy">
+                    <img src="/assets/services/cleaning-480.webp" alt="Glow at Home beauty professional" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Glow at Home <span class="verified" aria-label="Verified professional">✓</span></h3><p>Salon and beauty services</p></div><button class="bookmark" type="button" aria-label="Save Glow at Home">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.9 <small>(138 reviews)</small></span><span>2.5 km away</span><span class="available"><i></i> Available tomorrow</span></div>
@@ -308,7 +340,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="moving movers packing delivery shifting transport">
-                    <img src="/assets/services/car-mechanic.png" alt="SafeMove local moving service" loading="lazy">
+                    <img src="/assets/services/car-mechanic-480.webp" alt="SafeMove local moving service" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>SafeMove Packers <span class="verified" aria-label="Verified professional">✓</span></h3><p>Packing and local moving</p></div><button class="bookmark" type="button" aria-label="Save SafeMove Packers">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.6 <small>(67 reviews)</small></span><span>5.1 km away</span><span class="available"><i></i> Available tomorrow</span></div>
@@ -316,7 +348,7 @@
                     </div>
                 </article>
                 <article class="professional-card provider-card" data-service="emergency urgent help plumbing electrical roadside">
-                    <img src="/assets/services/plumber.png" alt="Rapid Help emergency service professional" loading="lazy">
+                    <img src="/assets/services/plumber-480.webp" alt="Rapid Help emergency service professional" width="480" height="270" loading="lazy" decoding="async">
                     <div class="professional-main">
                         <div class="professional-title"><div><h3>Rapid Help 24/7 <span class="verified" aria-label="Verified professional">✓</span></h3><p>Urgent home assistance</p></div><button class="bookmark" type="button" aria-label="Save Rapid Help 24/7">♡</button></div>
                         <div class="professional-meta"><span class="rating">★ 4.8 <small>(81 reviews)</small></span><span>3.0 km away</span><span class="available"><i></i> Available now</span></div>
@@ -327,20 +359,20 @@
             <p class="empty-state hidden" id="empty-state">No matching professionals are available yet.</p>
         </section>
 
-        <section class="content-section soft-section" aria-labelledby="how-heading">
+        <section class="content-section soft-section" id="how-it-works" aria-labelledby="how-heading">
             <div class="page-container">
                 <div class="section-heading centered"><div><span class="section-kicker">Simple booking</span><h2 id="how-heading">How it works</h2></div></div>
                 <ol class="steps-grid">
-                    <li><span>1</span><strong>Choose a service</strong><p>Find the help you need.</p></li>
-                    <li><span>2</span><strong>Select a professional</strong><p>Compare ratings and prices.</p></li>
-                    <li><span>3</span><strong>Pick a date and time</strong><p>Choose a convenient slot.</p></li>
-                    <li><span>4</span><strong>Track the professional</strong><p>Follow their live arrival.</p></li>
-                    <li><span>5</span><strong>Pay securely</strong><p>Use a trusted payment method.</p></li>
+                    <li><span>01</span><strong>Find</strong><p>Search for the service you need.</p></li>
+                    <li><span>02</span><strong>Compare</strong><p>Check ratings, prices and availability.</p></li>
+                    <li><span>03</span><strong>Book</strong><p>Choose a convenient date and time.</p></li>
+                    <li><span>04</span><strong>Relax</strong><p>Your professional handles the job.</p></li>
+                    <li><span>05</span><strong>Review</strong><p>Share your experience with your community.</p></li>
                 </ol>
             </div>
         </section>
 
-        <section class="content-section page-container split-section" aria-labelledby="why-heading">
+        <section class="content-section page-container split-section" id="about" aria-labelledby="why-heading">
             <div class="why-intro"><span class="section-kicker">Reliable from start to finish</span><h2 id="why-heading">Why choose LocalConnect</h2><p>Everything you need to book local help with confidence.</p></div>
             <div class="benefit-grid">
                 <div><span>✓</span><strong>Verified professionals</strong><p>Background-checked service partners.</p></div>
@@ -361,19 +393,29 @@
             </div>
         </section>
 
-        <section class="final-cta page-container" aria-labelledby="cta-heading">
+        <section class="final-cta page-container" id="professionals" aria-labelledby="cta-heading">
             <div><span class="section-kicker">Local help, made simple</span><h2 id="cta-heading">Need help today?</h2><p>Book a trusted professional near you in just a few minutes.</p></div>
-            <div><a class="primary-button large" href="#categories">Find a Service</a><a class="secondary-button large" href="#">Become a Professional</a></div>
+            <div><a class="primary-button large" href="#categories">Find a service</a><button class="secondary-button large" type="button" disabled>Partner applications coming soon</button></div>
         </section>
     </main>
 
+    <footer class="site-footer">
+        <div class="page-container footer-grid">
+            <div class="footer-brand"><a class="brand" href="/pages/home.html"><span class="brand-mark">L</span><span>Local<strong>Connect</strong></span></a><p>Reliable local help, thoughtfully connected.</p></div>
+            <div><strong>Explore</strong><a href="#categories">Services</a><a href="#how-it-works">How it works</a><a href="#messages">Customer stories</a></div>
+            <div><strong>Account</strong><a href="/pages/customer-dashboard.html">Dashboard</a><a href="/pages/customer-dashboard.html#active-bookings">Bookings</a><a href="/pages/customer-dashboard.html#favourites">Favourites</a></div>
+            <div><strong>For professionals</strong><span>Partner applications coming soon</span><a href="#how-it-works">Marketplace standards</a></div>
+        </div>
+        <div class="page-container footer-bottom"><span>© 2026 LocalConnect</span><span>Built for trusted neighbourhood services.</span></div>
+    </footer>
+
     <nav class="bottom-nav" aria-label="Mobile navigation">
-        <a class="active" href="/pages/home.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Home</span></a>
-        <a href="#messages"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.7-5A8 8 0 1 1 21 15Z"/></svg><span>Chats</span><i>2</i></a>
-        <a class="provider-action" href="#"><b>＋</b><span>Provider</span></a>
-        <a href="/pages/customer-dashboard.html" id="mobile-profile-link"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Profile</span></a>
+        <a class="active" href="/pages/home.html"><img src="/assets/icons/lucide/house.svg" alt="" aria-hidden="true"><span>Home</span></a>
+        <a href="#categories"><img src="/assets/icons/lucide/grid-2x2.svg" alt="" aria-hidden="true"><span>Services</span></a>
+        <a class="provider-action" href="#categories"><b><img src="/assets/icons/lucide/calendar-check.svg" alt="" aria-hidden="true"></b><span>Book</span></a>
+        <a href="/pages/customer-dashboard.html" id="mobile-profile-link"><img src="/assets/icons/lucide/user-round.svg" alt="" aria-hidden="true"><span>Profile</span></a>
     </nav>
 
-    <script type="module" src="/js/component-loader.js"></script>
+    <script type="module" src="/js/component-loader.js?v=20260813-3"></script>
 </body>
 </html>

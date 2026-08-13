@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Manage your LocalConnect profile, addresses and bookings">
     <title>My account — LocalConnect</title>
-    <link rel="stylesheet" href="/css/customer-dashboard.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23635BFF'/%3E%3Cpath d='M19 15h9v26h18v8H19z' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="/css/customer-dashboard.css?v=20260813-2">
 </head>
 <body>
     <header class="account-header">
@@ -23,25 +24,26 @@
                 <div><strong id="sidebar-name">Customer</strong><small id="sidebar-email">Complete your profile</small></div>
             </div>
             <nav class="account-nav" aria-label="Customer account">
-                <button class="active" data-view="overview"><span>⌂</span>Overview</button>
-                <button data-view="profile"><span>♙</span>My profile</button>
-                <button data-view="addresses"><span>⌖</span>Saved addresses</button>
-                <button data-view="active-bookings"><span>◷</span>Active bookings <b id="active-count">0</b></button>
-                <button data-view="history"><span>✓</span>Booking history</button>
-                <button data-view="favourites"><span>♡</span>Favourites</button>
-                <button data-view="settings"><span>⚙</span>Settings</button>
+                <button class="active" data-view="overview"><span><img src="/assets/icons/lucide/grid-2x2.svg" alt="" aria-hidden="true"></span>Overview</button>
+                <button data-view="profile"><span><img src="/assets/icons/lucide/user-round.svg" alt="" aria-hidden="true"></span>My profile</button>
+                <button data-view="addresses"><span><img src="/assets/icons/lucide/map-pin.svg" alt="" aria-hidden="true"></span>Saved addresses</button>
+                <button data-view="active-bookings"><span><img src="/assets/icons/lucide/calendar-check.svg" alt="" aria-hidden="true"></span>Active bookings <b id="active-count">0</b></button>
+                <button data-view="history"><span><img src="/assets/icons/lucide/history.svg" alt="" aria-hidden="true"></span>Booking history</button>
+                <button data-view="favourites"><span><img src="/assets/icons/lucide/heart.svg" alt="" aria-hidden="true"></span>Favourites</button>
+                <button data-view="notifications"><span><img src="/assets/icons/lucide/bell.svg" alt="" aria-hidden="true"></span>Notifications <b id="notification-count">0</b></button>
+                <button data-view="settings"><span><img src="/assets/icons/lucide/settings.svg" alt="" aria-hidden="true"></span>Settings</button>
             </nav>
-            <button class="sidebar-logout" type="button" data-logout>↪ Log out</button>
+            <button class="sidebar-logout" type="button" data-logout><img src="/assets/icons/lucide/log-out.svg" alt="" aria-hidden="true">Log out</button>
         </aside>
 
         <main class="account-content">
             <section class="account-view active" data-panel="overview">
-                <div class="page-heading"><div><span class="eyebrow">My account</span><h1>Welcome back, <span id="welcome-name">Customer</span></h1><p>Manage your services and account from one place.</p></div><a class="primary-button" href="/pages/home.html#categories">Book a service</a></div>
+                <div class="page-heading"><div><span class="eyebrow">My account</span><h1>Good <span id="greeting-time">morning</span>, <span id="welcome-name">Customer</span> <span class="greeting-icon" aria-hidden="true"><img src="/assets/icons/lucide/hand.svg" alt=""></span></h1><p>Your bookings, trusted professionals and account details at a glance.</p></div><a class="primary-button" href="/pages/home.html#categories">Book a service</a></div>
                 <div class="summary-grid">
-                    <button data-view-link="active-bookings"><span class="summary-icon purple">◷</span><small>Active bookings</small><strong id="summary-active">0</strong><em>View bookings →</em></button>
-                    <button data-view-link="history"><span class="summary-icon green">✓</span><small>Completed services</small><strong id="summary-completed">0</strong><em>View history →</em></button>
-                    <button data-view-link="favourites"><span class="summary-icon pink">♥</span><small>Saved professionals</small><strong id="summary-favourites">0</strong><em>View favourites →</em></button>
-                    <button data-view-link="addresses"><span class="summary-icon orange">⌖</span><small>Saved addresses</small><strong id="summary-addresses">0</strong><em>Manage addresses →</em></button>
+                    <button data-view-link="active-bookings"><span class="summary-icon purple"><img src="/assets/icons/lucide/calendar-check.svg" alt="" aria-hidden="true"></span><small>Upcoming</small><strong id="summary-active">0</strong><em>View bookings →</em></button>
+                    <button data-view-link="history"><span class="summary-icon green"><img src="/assets/icons/lucide/circle-check-big.svg" alt="" aria-hidden="true"></span><small>Completed services</small><strong id="summary-completed">0</strong><em>View history →</em></button>
+                    <button data-view-link="history"><span class="summary-icon orange"><img src="/assets/icons/lucide/wallet-cards.svg" alt="" aria-hidden="true"></span><small>Total spent</small><strong id="summary-spent">₹0</strong><em>View history →</em></button>
+                    <button data-view-link="favourites"><span class="summary-icon pink"><img src="/assets/icons/lucide/heart.svg" alt="" aria-hidden="true"></span><small>Favourites</small><strong id="summary-favourites">0</strong><em>View favourites →</em></button>
                 </div>
                 <div class="dashboard-grid">
                     <section class="content-card"><div class="card-heading"><div><span class="eyebrow">In progress</span><h2>Latest booking</h2></div><button class="text-button" data-view-link="active-bookings">View all</button></div><div id="overview-booking"></div></section>
@@ -81,6 +83,11 @@
                 <div class="favourite-grid" id="favourite-list"></div>
             </section>
 
+            <section class="account-view" data-panel="notifications" hidden>
+                <div class="page-heading"><div><span class="eyebrow">Stay informed</span><h1>Notifications</h1><p>Important booking and account updates appear here.</p></div><button class="secondary-button" id="mark-notifications-read" type="button">Mark all as read</button></div>
+                <div class="notification-list" id="notification-list"></div>
+            </section>
+
             <section class="account-view" data-panel="settings" hidden>
                 <div class="page-heading"><div><span class="eyebrow">Preferences and security</span><h1>Account settings</h1><p>Control notifications, appearance and account access.</p></div></div>
                 <form class="settings-grid" id="settings-form">
@@ -100,6 +107,6 @@
     <dialog id="reschedule-dialog"><form method="dialog" class="dialog-card" id="reschedule-form"><div class="dialog-heading"><div><span class="eyebrow">Change appointment</span><h2>Reschedule booking</h2></div><button value="cancel" aria-label="Close">×</button></div><input name="bookingId" type="hidden"><div class="form-grid"><label>New date<input name="date" type="date" required></label><label>New arrival window<select name="time" required><option value="">Select a time</option><option>09:00 AM – 11:00 AM</option><option>11:00 AM – 01:00 PM</option><option>02:00 PM – 04:00 PM</option><option>04:00 PM – 06:00 PM</option></select></label></div><div class="form-actions"><button class="secondary-button" value="cancel">Keep current time</button><button class="primary-button" type="submit" value="default">Confirm new time</button></div></form></dialog>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
-    <script src="/js/customer-dashboard.js"></script>
+    <script type="module" src="/js/customer-dashboard.js"></script>
 </body>
 </html>

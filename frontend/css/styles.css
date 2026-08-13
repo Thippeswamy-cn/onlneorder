@@ -885,3 +885,94 @@ a:hover {
         display: grid;
     }
 }
+
+/* LocalConnect authentication experience */
+:root {
+    --auth-primary: #635bff;
+    --auth-primary-dark: #5147e5;
+    --auth-ink: #111827;
+    --auth-muted: #64748b;
+    --auth-border: #e2e8f0;
+}
+
+body {
+    padding: clamp(18px, 3vw, 42px);
+    background: #f8fafc;
+    color: var(--auth-ink);
+}
+
+.auth-shell {
+    width: min(1120px, 100%);
+    min-height: min(720px, calc(100vh - 72px));
+    grid-template-columns: minmax(420px, 1fr) minmax(440px, .95fr);
+    border: 1px solid var(--auth-border);
+    border-radius: 22px;
+    box-shadow: 0 24px 64px rgba(15, 23, 42, .11);
+}
+
+.visual-panel,
+.signup-visual {
+    padding: clamp(34px, 4vw, 52px);
+    background: #25205f;
+}
+
+.visual-panel::after {
+    opacity: .12;
+    background-size: 20px 20px;
+}
+
+.glow-one { background: rgba(129, 120, 255, .28); }
+.glow-two { background: rgba(255, 255, 255, .08); }
+.logo-lockup, .mobile-brand { grid-template-columns: 40px auto; font-size: 20px; }
+.logo-mark { width: 40px; height: 40px; border-radius: 11px; background: #635bff; }
+.visual-copy { margin-top: clamp(54px, 8vh, 90px); }
+.visual-copy .eyebrow { font-size: 12px; letter-spacing: .1em; }
+.visual-copy > h2 { max-width: 500px; margin-top: 14px; font-size: clamp(38px, 4vw, 52px); line-height: 1.05; letter-spacing: -.045em; }
+.visual-copy > p { max-width: 500px; margin-top: 18px; color: #d6d5e8; font-size: 15px; line-height: 1.7; }
+.service-carousel { margin-top: 30px; border-radius: 16px; box-shadow: 0 16px 36px rgba(5, 3, 25, .22); }
+.service-photo::after { background: linear-gradient(180deg, transparent 32%, rgba(8, 6, 31, .9)); }
+.slide-category { background: #635bff; }
+.booking-marquee { display: none; }
+.trust-row { margin-top: 24px; }
+.trust-row p { color: #deddf0; font-size: 13px; }
+.security-pill { font-size: 12px; }
+.benefit-list { margin-top: 28px; gap: 12px; font-size: 13px; }
+.quote-card { border-radius: 14px; }
+
+.form-panel { padding: clamp(38px, 5vw, 70px); }
+.form-heading { margin-bottom: 32px; }
+.form-heading .eyebrow { color: var(--auth-primary); font-size: 12px; }
+.form-heading h1 { margin-top: 8px; color: var(--auth-ink); font-size: clamp(34px, 4vw, 44px); letter-spacing: -.04em; }
+.intro { margin-top: 11px; color: var(--auth-muted); font-size: 15px; line-height: 1.6; }
+.form-group { margin-bottom: 20px; }
+.form-group label, .label-row label { color: #334155; font-size: 13px; font-weight: 700; }
+.form-group input { height: 50px; padding: 0 15px; border-color: var(--auth-border); border-radius: 11px; background: #fff; color: var(--auth-ink); font-size: 15px; }
+.form-group input:hover { border-color: #cbd5e1; }
+.form-group input:focus { border-color: var(--auth-primary); box-shadow: 0 0 0 4px rgba(99, 91, 255, .11); }
+.password-field .toggle-password { right: 8px; min-height: 36px; padding: 0 9px; color: var(--auth-primary); font-size: 12px; }
+.small-link, .text-button, .secondary a { color: var(--auth-primary); }
+.remember { color: #475569; font-size: 13px; }
+.remember input { accent-color: var(--auth-primary); }
+.primary-button { min-height: 50px; border-radius: 11px; background: var(--auth-primary); font-size: 14px; box-shadow: none; }
+.primary-button:hover { background: var(--auth-primary-dark); transform: translateY(-1px); box-shadow: 0 8px 20px rgba(99, 91, 255, .18); }
+.secondary-button { min-height: 46px; border-color: #d8d5ff; border-radius: 10px; color: var(--auth-primary); font-size: 13px; }
+.inline-field { gap: 10px; }
+.step-label { color: var(--auth-primary); font-size: 12px; }
+.verified-email { border-color: #bbf7d0; border-radius: 11px; background: #f0fdf4; }
+.field-hint, .error, .legal-copy { font-size: 12px; }
+.secondary { margin-top: 26px; font-size: 14px; }
+
+@media (max-width: 840px) {
+    body { padding: 0; background: #fff; }
+    .auth-shell { width: 100%; min-height: 100vh; border: 0; border-radius: 0; box-shadow: none; }
+    .visual-panel { min-height: 210px; padding: 14px; background: #25205f; }
+    .service-carousel { height: 182px; margin: 0; border-radius: 14px; }
+    .form-panel { padding: 42px max(24px, 7vw) 54px; }
+}
+
+@media (max-width: 480px) {
+    .form-panel { padding: 34px 22px 46px; }
+    .form-heading h1 { font-size: 34px; }
+    .inline-field { flex-direction: column; }
+    .inline-field .secondary-button { width: 100%; }
+}

@@ -13,8 +13,11 @@ frontend/js/              Browser JavaScript
 frontend/css/             Stylesheets
 frontend/components/      Reusable HTML components
 frontend/assets/          Images and other static assets
+scripts/                  Build-time asset utilities
+tests/                    Flask API regression tests
 requirements.in           Human-maintained direct dependencies
 requirements.txt          Pinned deployment dependencies
+requirements-dev.txt      Development and image-build dependencies
 wsgi.py                   Production WSGI entry point
 ```
 
@@ -23,20 +26,34 @@ wsgi.py                   Production WSGI entry point
 Python 3.11 or newer is recommended.
 
 ```powershell
-cd online-order
+cd "D:\All inn one"
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 Copy-Item .env.example .env
-python backend\app.py
+python -m backend.app
 ```
 
-Open <http://127.0.0.1:5000>. Use `localhost` during development because browser
+Open <http://127.0.0.1:3000>. Use `localhost` during development because browser
 geolocation is unavailable on ordinary insecure remote origins.
 
 Without SMTP values, signup runs in development mode and returns the OTP in the
 API response. Configure the SMTP variables in `.env` before a real deployment.
+
+## Development checks
+
+Install the development dependencies, run the API tests, and regenerate the
+responsive service images after changing a source PNG:
+
+```powershell
+pip install -r requirements-dev.txt
+python -m unittest discover -s tests -v
+python scripts\optimize_service_images.py
+```
+
+The original PNG files are editing sources. Pages serve the generated 480 px
+and 960 px WebP variants.
 
 ## Dependency locking
 
@@ -60,6 +77,9 @@ Set at least these environment variables in the hosting platform:
 - `FLASK_DEBUG=false`
 - `PORT` to the platform-provided port
 - `DATABASE_PATH` to persistent storage
+- `FLASK_SECRET_KEY` to a long random value
+- `COOKIE_SECURE=true` when the site is served over HTTPS
+- `NOMINATIM_CONTACT_EMAIL` for the server-side address lookup user agent
 - On Render Free: `BREVO_API_KEY`, `BREVO_FROM_EMAIL`, and optionally
   `BREVO_SENDER_NAME`. The sender email must be verified in Brevo.
 - On hosts that allow SMTP: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`,
