@@ -191,6 +191,81 @@ class LocalConnectApiTests(unittest.TestCase):
             with self.assertRaisesRegex(OSError, "SMTP_HOST must be a hostname"):
                 app_module.send_otp_email("customer@example.com", "123456")
 
+    def test_password_reset_code_survives_database_reopen_and_updates_login(self):
+        delivered = {}
+
+        def capture_reset_code(email, otp, purpose):
+            delivered.update(email=email, otp=otp, purpose=purpose)
+            return True
+
+        with patch.object(app_module, "send_otp_email", side_effect=capture_reset_code):
+            requested = self.client.post(
+                "/api/request-password-reset", json={"email": "asha@example.com"}
+            )
+
+        self.assertEqual(requested.status_code, 200)
+        self.assertEqual(requested.get_json()["expiresIn"], 600)
+        self.assertEqual(requested.get_json()["resendIn"], 30)
+        self.assertEqual(delivered["purpose"], "password reset")
+        with app_module.database() as connection:
+            stored = connection.execute(
+                "SELECT otp_hash FROM password_reset_codes WHERE email = ?",
+                ("asha@example.com",),
+            ).fetchone()
+        self.assertIsNotNone(stored)
+        self.assertNotEqual(stored["otp_hash"], delivered["otp"])
+
+        reset = self.client.post(
+            "/api/reset-password",
+            json={
+                "email": "asha@example.com",
+                "otp": delivered["otp"],
+                "password": "new-secret-12",
+            },
+        )
+        self.assertEqual(reset.status_code, 200)
+        self.assertEqual(
+            self.sign_in(email="asha@example.com", password="secret12").status_code, 401
+        )
+        self.assertEqual(
+            self.sign_in(email="asha@example.com", password="new-secret-12").status_code,
+            200,
+        )
+        with app_module.database() as connection:
+            remaining = connection.execute(
+                "SELECT 1 FROM password_reset_codes WHERE email = ?",
+                ("asha@example.com",),
+            ).fetchone()
+        self.assertIsNone(remaining)
+
+    def test_expired_password_reset_code_is_removed(self):
+        with app_module.database() as connection:
+            connection.execute(
+                """
+                INSERT INTO password_reset_codes
+                    (email, otp_hash, expires_at, sent_at, attempts)
+                VALUES (?, ?, 0, 0, 0)
+                """,
+                ("asha@example.com", app_module.hash_otp("123456")),
+            )
+
+        response = self.client.post(
+            "/api/reset-password",
+            json={
+                "email": "asha@example.com",
+                "otp": "123456",
+                "password": "new-secret-12",
+            },
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("expired", response.get_json()["message"])
+        with app_module.database() as connection:
+            remaining = connection.execute(
+                "SELECT 1 FROM password_reset_codes WHERE email = ?",
+                ("asha@example.com",),
+            ).fetchone()
+        self.assertIsNone(remaining)
+
     def test_delivery_failure_returns_safe_message_and_discards_code(self):
         email = "new-customer@example.com"
         with (

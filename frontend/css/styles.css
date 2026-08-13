@@ -608,12 +608,38 @@ h1 {
     letter-spacing: .45em;
 }
 
+#reset-otp::placeholder {
+    font-size: 14px;
+    font-weight: 650;
+    letter-spacing: .02em;
+}
+
 .field-hint {
     margin-top: 6px;
     display: block;
     color: #7b8599;
     font-size: 12px;
 }
+
+.reset-code-help {
+    margin-top: 7px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.reset-code-help .field-hint { margin-top: 0; }
+
+.reset-code-expiry {
+    flex: 0 0 auto;
+    color: #238263;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.reset-code-expiry.is-expired { color: #c4434e; }
 
 .text-button {
     width: 100%;
@@ -626,6 +652,11 @@ h1 {
     font-size: 13px;
     font-weight: 700;
     cursor: pointer;
+}
+
+.text-button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
 }
 
 .verified-email {

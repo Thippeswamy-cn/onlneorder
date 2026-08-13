@@ -166,41 +166,112 @@ if (passwordResetForm) {
     const password = document.getElementById("reset-new-password");
     const confirmPassword = document.getElementById("reset-confirm-password");
     const message = document.getElementById("reset-message");
+    const requestButton = document.getElementById("request-reset-code");
+    const resendButton = document.getElementById("resend-reset-code");
+    const expiryMessage = document.getElementById("reset-code-expiry");
+    let expiresAt = 0;
+    let expiryTimer;
+    let resendTimer;
+
+    function formatCountdown(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        return `${minutes}:${String(seconds % 60).padStart(2, "0")}`;
+    }
+
+    function showExpiredCode() {
+        clearInterval(expiryTimer);
+        expiresAt = 0;
+        expiryMessage.textContent = "Code expired. Resend to get a new code.";
+        expiryMessage.classList.add("is-expired");
+        expiryMessage.classList.remove("hidden");
+        resendButton.disabled = false;
+        resendButton.textContent = window.LocalConnectI18n?.t("Resend code") || "Resend code";
+    }
+
+    function startExpiryCountdown(seconds = 600) {
+        clearInterval(expiryTimer);
+        expiresAt = Date.now() + seconds * 1000;
+        expiryMessage.classList.remove("hidden", "is-expired");
+        const update = () => {
+            const remaining = Math.max(0, Math.ceil((expiresAt - Date.now()) / 1000));
+            if (!remaining) {
+                showExpiredCode();
+                return;
+            }
+            expiryMessage.textContent = `Code expires in ${formatCountdown(remaining)}`;
+        };
+        update();
+        expiryTimer = setInterval(update, 1000);
+    }
+
+    function startResendCooldown(seconds = 30) {
+        clearInterval(resendTimer);
+        const readyAt = Date.now() + seconds * 1000;
+        const update = () => {
+            const remaining = Math.max(0, Math.ceil((readyAt - Date.now()) / 1000));
+            if (!remaining) {
+                clearInterval(resendTimer);
+                resendButton.disabled = false;
+                resendButton.textContent = window.LocalConnectI18n?.t("Resend code") || "Resend code";
+                return;
+            }
+            resendButton.disabled = true;
+            resendButton.textContent = `Resend in ${remaining}s`;
+        };
+        update();
+        resendTimer = setInterval(update, 1000);
+    }
 
     async function requestResetCode(button) {
-        if (!validateRequired(email, "Email")) return;
+        if (!validateRequired(email, "Email")) return false;
+        let data;
         setButtonLoading(button, true, "Sending…");
         message.textContent = "Sending reset code…";
         try {
-            const data = await apiRequest("/request-password-reset", {
+            data = await apiRequest("/request-password-reset", {
                 email: email.value.trim()
             });
-            email.readOnly = true;
-            document.getElementById("reset-password-step").classList.remove("hidden");
-            document.getElementById("reset-description").textContent =
-                `Enter the code sent to ${email.value.trim()}.`;
-            message.textContent = data.message;
-            otp.focus();
         } catch (error) {
             message.textContent = error.message;
+            return false;
         } finally {
             setButtonLoading(button, false);
         }
+
+        email.readOnly = true;
+        requestButton.classList.add("hidden");
+        document.getElementById("reset-password-step").classList.remove("hidden");
+        document.getElementById("reset-description").textContent =
+            `Enter the newest code sent to ${email.value.trim()}.`;
+        otp.value = "";
+        setError(otp, "");
+        message.textContent = data.message;
+        startExpiryCountdown(data.expiresIn || 600);
+        startResendCooldown(data.resendIn || 30);
+        otp.focus();
+        return true;
     }
 
-    document.getElementById("request-reset-code").addEventListener("click", (event) => {
+    requestButton.addEventListener("click", (event) => {
         requestResetCode(event.currentTarget);
     });
-    document.getElementById("resend-reset-code").addEventListener("click", (event) => {
+    resendButton.addEventListener("click", (event) => {
         requestResetCode(event.currentTarget);
     });
 
     otp.addEventListener("input", () => {
         otp.value = otp.value.replace(/\D/g, "").slice(0, 6);
+        if (otp.classList.contains("invalid")) setError(otp, "");
     });
 
     passwordResetForm.addEventListener("submit", async (event) => {
         event.preventDefault();
+        if (!expiresAt || Date.now() >= expiresAt) {
+            setError(otp, "This code has expired. Select Resend code for a new one.");
+            showExpiredCode();
+            otp.focus();
+            return;
+        }
         let valid = /^\d{6}$/.test(otp.value);
         setError(otp, valid ? "" : "Enter the complete 6-digit code.");
         valid = validateRequired(password, "Password") && valid;
@@ -225,7 +296,10 @@ if (passwordResetForm) {
                 window.location.href = "/pages/index.html";
             }, 1200);
         } catch (error) {
-            message.textContent = error.message;
+            setError(otp, error.message);
+            message.textContent = "";
+            if (/expired|too many attempts/i.test(error.message)) showExpiredCode();
+            otp.select();
             setButtonLoading(submit, false);
         }
     });

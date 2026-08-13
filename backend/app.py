@@ -52,7 +52,6 @@ app.config.update(
 )
 otp_records: dict[str, dict] = {}
 verification_tokens: dict[str, dict] = {}
-password_reset_records: dict[str, dict] = {}
 request_buckets: dict[str, deque] = defaultdict(deque)
 geocode_cache: dict[str, tuple[float, object]] = {}
 USER_STATE_TYPES = {
@@ -172,6 +171,18 @@ def initialize_database():
             )
             """
         )
+        connection.execute(
+            """
+            CREATE TABLE IF NOT EXISTS password_reset_codes (
+                email TEXT PRIMARY KEY,
+                otp_hash TEXT NOT NULL,
+                expires_at REAL NOT NULL,
+                sent_at REAL NOT NULL,
+                attempts INTEGER NOT NULL DEFAULT 0,
+                FOREIGN KEY (email) REFERENCES users (email) ON DELETE CASCADE
+            )
+            """
+        )
 
 
 def normalize_email(value):
@@ -187,6 +198,11 @@ def user_exists(email):
         return connection.execute(
             "SELECT 1 FROM users WHERE email = ?", (email,)
         ).fetchone() is not None
+
+
+def delete_password_reset_code(email):
+    with database() as connection:
+        connection.execute("DELETE FROM password_reset_codes WHERE email = ?", (email,))
 
 
 def signed_in_user():
@@ -629,34 +645,55 @@ def request_password_reset():
 
     # Keep the response generic so this endpoint does not reveal registered emails.
     if not user_exists(email):
-        return jsonify(message="If an account exists, a reset code has been sent.")
+        return jsonify(
+            message="If an account exists, a reset code has been sent.",
+            expiresIn=600,
+            resendIn=30,
+        )
 
-    existing = password_reset_records.get(email)
     now = time.time()
+    with database() as connection:
+        existing = connection.execute(
+            "SELECT sent_at FROM password_reset_codes WHERE email = ?", (email,)
+        ).fetchone()
     if existing and now - existing["sent_at"] < 30:
         return jsonify(message="Please wait 30 seconds before requesting another code."), 429
 
     otp = f"{secrets.randbelow(900000) + 100000:06d}"
-    password_reset_records[email] = {
-        "otp_hash": hash_otp(otp),
-        "expires_at": now + 600,
-        "sent_at": now,
-        "attempts": 0,
-    }
+    with database() as connection:
+        connection.execute(
+            """
+            INSERT INTO password_reset_codes
+                (email, otp_hash, expires_at, sent_at, attempts)
+            VALUES (?, ?, ?, ?, 0)
+            ON CONFLICT(email) DO UPDATE SET
+                otp_hash = excluded.otp_hash,
+                expires_at = excluded.expires_at,
+                sent_at = excluded.sent_at,
+                attempts = 0
+            """,
+            (email, hash_otp(otp), now + 600, now),
+        )
     try:
         delivered = send_otp_email(email, otp, "password reset")
     except (OSError, smtplib.SMTPException):
         app.logger.exception("Password reset email delivery failed")
-        password_reset_records.pop(email, None)
+        delete_password_reset_code(email)
         return jsonify(
             message="Email delivery is temporarily unavailable. Please try again shortly."
         ), 502
 
     if delivered:
-        return jsonify(message="A password reset code was sent to your email.")
+        return jsonify(
+            message="A new password reset code was sent to your email.",
+            expiresIn=600,
+            resendIn=30,
+        )
     return jsonify(
         message=f"Development mode — your reset code is {otp}",
         development=True,
+        expiresIn=600,
+        resendIn=30,
     )
 
 
@@ -666,20 +703,33 @@ def reset_password():
     email = normalize_email(data.get("email"))
     otp = str(data.get("otp") or "")
     password = str(data.get("password") or "")
-    record = password_reset_records.get(email)
     now = time.time()
 
     if len(password) < 6:
         return jsonify(message="Password must be at least 6 characters."), 400
+    with database() as connection:
+        record = connection.execute(
+            """
+            SELECT otp_hash, expires_at, attempts
+            FROM password_reset_codes
+            WHERE email = ?
+            """,
+            (email,),
+        ).fetchone()
     if not record or now > record["expires_at"]:
-        password_reset_records.pop(email, None)
+        delete_password_reset_code(email)
         return jsonify(message="The reset code has expired. Request a new one."), 400
 
-    record["attempts"] += 1
-    if record["attempts"] > 5:
-        password_reset_records.pop(email, None)
+    attempts = record["attempts"] + 1
+    if attempts > 5:
+        delete_password_reset_code(email)
         return jsonify(message="Too many attempts. Request a new code."), 429
     if not secrets.compare_digest(hash_otp(otp), record["otp_hash"]):
+        with database() as connection:
+            connection.execute(
+                "UPDATE password_reset_codes SET attempts = ? WHERE email = ?",
+                (attempts, email),
+            )
         return jsonify(message="The reset code is incorrect."), 400
 
     with database() as connection:
@@ -687,7 +737,7 @@ def reset_password():
             "UPDATE users SET password_hash = ? WHERE email = ?",
             (generate_password_hash(password), email),
         )
-    password_reset_records.pop(email, None)
+        connection.execute("DELETE FROM password_reset_codes WHERE email = ?", (email,))
     if result.rowcount != 1:
         return jsonify(message="Account not found."), 404
     return jsonify(message="Password updated. You can now sign in.")
