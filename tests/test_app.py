@@ -1,6 +1,8 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 from werkzeug.security import generate_password_hash
 
@@ -60,6 +62,48 @@ class LocalConnectApiTests(unittest.TestCase):
         self.assertLess(len(image.data), 50_000)
         image.close()
 
+    def test_every_page_loads_the_four_language_interface(self):
+        for path in (
+            "/pages/index.html",
+            "/pages/signup.html",
+            "/pages/forgot-password.html",
+            "/pages/home.html",
+            "/pages/customer-dashboard.html",
+        ):
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                markup = response.get_data(as_text=True)
+                self.assertIn("/css/i18n.css", markup)
+                self.assertIn("/js/i18n.js", markup)
+                response.close()
+
+        response = self.client.get("/js/i18n.js")
+        script = response.get_data(as_text=True)
+        for language, label in (
+            ("en", "English"),
+            ("kn", "ಕನ್ನಡ"),
+            ("te", "తెలుగు"),
+            ("hi", "हिन्दी"),
+        ):
+            with self.subTest(language=language):
+                self.assertIn(f'{language}: {{ label: "{label}"', script)
+        self.assertIn('const STORAGE_KEY = "localConnectLanguage"', script)
+        self.assertIn("MutationObserver", script)
+        response.close()
+
+    def test_home_page_has_primary_service_discovery_controls(self):
+        response = self.client.get("/pages/home.html")
+        markup = response.get_data(as_text=True)
+        for control_id in (
+            'id="hero-service-search-form"',
+            'id="hero-service-search"',
+            'id="hero-location-button"',
+            'id="more-services"',
+        ):
+            with self.subTest(control_id=control_id):
+                self.assertIn(control_id, markup)
+        response.close()
+
     def test_session_login_state_sync_and_logout(self):
         self.assertFalse(self.client.get("/api/session").get_json()["authenticated"])
         login = self.sign_in()
@@ -99,6 +143,64 @@ class LocalConnectApiTests(unittest.TestCase):
             headers={"Sec-Fetch-Site": "cross-site"},
         )
         self.assertEqual(response.status_code, 403)
+
+    def test_existing_account_gets_clear_signup_guidance(self):
+        response = self.client.post("/api/send-otp", json={"email": "asha@example.com"})
+        self.assertEqual(response.status_code, 409)
+        self.assertIn("Forgot password", response.get_json()["message"])
+
+    def test_smtp_delivery_uses_verified_starttls_connection(self):
+        environment = {
+            "BREVO_API_KEY": "",
+            "SMTP_HOST": "smtp.gmail.com",
+            "SMTP_PORT": "587",
+            "SMTP_USERNAME": "sender@example.com",
+            "SMTP_PASSWORD": "abcd efgh ijkl mnop",
+            "SMTP_FROM_EMAIL": "sender@example.com",
+            "SMTP_USE_SSL": "false",
+            "FROM_EMAIL": "",
+        }
+        tls_context = Mock()
+        with (
+            patch.dict(os.environ, environment),
+            patch.object(app_module.ssl, "create_default_context", return_value=tls_context),
+            patch.object(app_module.smtplib, "SMTP") as smtp,
+        ):
+            server = smtp.return_value.__enter__.return_value
+            delivered = app_module.send_otp_email("customer@example.com", "123456")
+
+        self.assertTrue(delivered)
+        smtp.assert_called_once_with("smtp.gmail.com", 587, timeout=15)
+        self.assertEqual(server.ehlo.call_count, 2)
+        server.starttls.assert_called_once_with(context=tls_context)
+        server.login.assert_called_once_with("sender@example.com", "abcdefghijklmnop")
+        server.send_message.assert_called_once()
+
+    def test_invalid_smtp_host_is_rejected_with_clear_error(self):
+        environment = {
+            "BREVO_API_KEY": "",
+            "SMTP_HOST": "sender@example.com",
+            "SMTP_PORT": "587",
+            "SMTP_USERNAME": "sender@example.com",
+            "SMTP_PASSWORD": "abcdefghijklmnop",
+            "SMTP_FROM_EMAIL": "sender@example.com",
+            "SMTP_USE_SSL": "false",
+            "FROM_EMAIL": "",
+        }
+        with patch.dict(os.environ, environment):
+            with self.assertRaisesRegex(OSError, "SMTP_HOST must be a hostname"):
+                app_module.send_otp_email("customer@example.com", "123456")
+
+    def test_delivery_failure_returns_safe_message_and_discards_code(self):
+        email = "new-customer@example.com"
+        with (
+            patch.object(app_module, "send_otp_email", side_effect=OSError("mail offline")),
+            patch.object(app_module.app.logger, "exception"),
+        ):
+            response = self.client.post("/api/send-otp", json={"email": email})
+        self.assertEqual(response.status_code, 502)
+        self.assertNotIn(email, app_module.otp_records)
+        self.assertNotIn("SMTP", response.get_json()["message"])
 
 
 if __name__ == "__main__":

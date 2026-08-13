@@ -14,8 +14,8 @@ async function startHomePage() {
         await hydrateAccountState().catch(error => {
             console.warn("Account sync is temporarily unavailable:", error.message);
         });
-        await import("./location.js");
-        await import("./home.js?v=20260813-3");
+        await import("./location.js?v=20260813-5");
+        await import("./home.js?v=20260813-6");
         await import("./premium-card.js");
     } catch (error) {
         console.error("LocalConnect failed to start:", error);

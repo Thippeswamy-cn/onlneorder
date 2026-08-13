@@ -8,7 +8,8 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23635BFF'/%3E%3Cpath d='M19 15h9v26h18v8H19z' fill='white'/%3E%3C/svg%3E">
     <link rel="stylesheet" href="/css/home.css?v=20260813-3">
     <link rel="stylesheet" href="/css/premium-card.css">
-    <link rel="stylesheet" href="/css/design-system.css">
+    <link rel="stylesheet" href="/css/design-system.css?v=20260813-9">
+    <link rel="stylesheet" href="/css/i18n.css?v=20260813-4">
 </head>
 <body class="marketplace-page">
     <header class="site-header">
@@ -232,6 +233,20 @@
             <p class="eyebrow">Verified professionals. Clear prices. Local expertise.</p>
             <h1 id="hero-heading">Trusted local professionals, just a booking away.</h1>
             <p>Find verified professionals for cleaning, plumbing, electrical repairs and more — all in one place.</p>
+            <div class="hero-search-card" aria-label="Find a service">
+                <form class="header-search" id="hero-service-search-form" role="search">
+                    <img class="ui-icon" src="/assets/icons/lucide/search.svg" alt="" aria-hidden="true">
+                    <label class="sr-only" for="hero-service-search">Search for a service</label>
+                    <span class="search-field-copy"><small>Search services</small><input id="hero-service-search" type="search" placeholder="Search for a service" autocomplete="off"></span>
+                    <button class="service-search-button" type="submit">Find a service</button>
+                    <div class="service-search-results" id="hero-service-search-results" role="listbox" aria-label="Matching services" hidden></div>
+                </form>
+                <button class="header-location" id="hero-location-button" type="button" aria-label="Choose service location" aria-haspopup="dialog">
+                    <img class="ui-icon" src="/assets/icons/lucide/map-pin.svg" alt="" aria-hidden="true">
+                    <span><small>Location</small><strong id="hero-location-summary">Use current location</strong></span>
+                    <img class="chevron ui-icon" src="/assets/icons/lucide/chevron-down.svg" alt="" aria-hidden="true">
+                </button>
+            </div>
             <ul class="hero-trust" aria-label="Why customers trust LocalConnect">
                 <li><span>✓</span> Verified professionals</li>
                 <li><span>✓</span> Transparent pricing</li>
@@ -416,6 +431,7 @@
         <a href="/pages/customer-dashboard.html" id="mobile-profile-link"><img src="/assets/icons/lucide/user-round.svg" alt="" aria-hidden="true"><span>Profile</span></a>
     </nav>
 
-    <script type="module" src="/js/component-loader.js?v=20260813-3"></script>
+    <script src="/js/i18n.js?v=20260813-4"></script>
+    <script type="module" src="/js/component-loader.js?v=20260813-6"></script>
 </body>
 </html>

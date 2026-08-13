@@ -1,5 +1,9 @@
 const locationButton = document.getElementById("location-button");
 const locationSummary = document.getElementById("location-summary");
+const heroLocationButton = document.getElementById("hero-location-button");
+const heroLocationSummary = document.getElementById("hero-location-summary");
+const locationButtons = [locationButton, heroLocationButton].filter(Boolean);
+const locationSummaries = [locationSummary, heroLocationSummary].filter(Boolean);
 const locationDialog = document.getElementById("location-dialog");
 const locationClose = document.getElementById("location-close");
 const locationRetry = document.getElementById("location-retry");
@@ -31,6 +35,14 @@ let isViewingSearch = false;
 let selectedLocation = null;
 let searchSubmittedWithEnter = false;
 
+function updateLocationSummary(label) {
+    locationSummaries.forEach(summary => {
+        summary.textContent = label;
+        summary.title = label;
+    });
+    locationButtons.forEach(button => button.setAttribute("aria-label", `Selected location: ${label}`));
+}
+
 try {
     selectedLocation = savedLocationData ? JSON.parse(savedLocationData) : null;
 } catch {
@@ -39,18 +51,14 @@ try {
 
 if (selectedLocation?.label || savedLocationLabel) {
     const initialLabel = selectedLocation?.label || savedLocationLabel;
-    locationSummary.textContent = initialLabel;
-    locationSummary.title = initialLabel;
-    locationButton.setAttribute("aria-label", `Selected location: ${initialLabel}`);
+    updateLocationSummary(initialLabel);
 }
 
 function saveSelectedLocation(location) {
     selectedLocation = location;
     localStorage.setItem("localConnectSelectedLocation", JSON.stringify(location));
     localStorage.setItem("localConnectLocationLabel", location.label);
-    locationSummary.textContent = location.label;
-    locationSummary.title = location.label;
-    locationButton.setAttribute("aria-label", `Selected location: ${location.label}`);
+    updateLocationSummary(location.label);
 }
 
 function showGoogleMap(query, zoom = 17) {
@@ -162,7 +170,7 @@ async function updateAreaName(latitude, longitude) {
         const url = new URL("/api/geocode/reverse", window.location.origin);
         url.searchParams.set("lat", latitude);
         url.searchParams.set("lon", longitude);
-        url.searchParams.set("language", navigator.language || "en");
+        url.searchParams.set("language", window.LocalConnectI18n?.getLanguage() || navigator.language || "en");
         const response = await fetch(url, { headers: { Accept: "application/json" } });
         if (!response.ok) throw new Error("Area lookup failed");
         const result = await response.json();
@@ -181,7 +189,7 @@ async function updateAreaName(latitude, longitude) {
     } catch {
         if (!isViewingSearch) {
             locationNameText.textContent = "Area name unavailable";
-            locationSummary.textContent = "Live location found";
+            updateLocationSummary("Live location found");
         }
     }
 }
@@ -230,7 +238,7 @@ function showLiveLocation(position) {
     mapsLink.href = `https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`;
     mapsLink.textContent = "Open in Google Maps";
     locationName.hidden = false;
-    locationSummary.textContent = "Finding area name…";
+    updateLocationSummary("Finding area name…");
     locationButton.setAttribute("aria-label", `Current live location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
     const isPrecise = accuracy <= 100;
     locationStatus.textContent = isPrecise
@@ -278,11 +286,11 @@ function startLiveLocation() {
     });
 }
 
-locationButton.addEventListener("click", () => {
+locationButtons.forEach(button => button.addEventListener("click", () => {
     locationDialog.showModal();
     const restored = showSavedLocation();
     if (!restored || selectedLocation?.source === "live") startLiveLocation();
-});
+}));
 locationClose.addEventListener("click", () => locationDialog.close());
 locationDone.addEventListener("click", () => locationDialog.close());
 locationRetry.addEventListener("click", startLiveLocation);
@@ -336,7 +344,7 @@ locationSearch.addEventListener("submit", async event => {
     try {
         const searchUrl = new URL("/api/geocode/search", window.location.origin);
         searchUrl.searchParams.set("q", query);
-        searchUrl.searchParams.set("language", navigator.language || "en");
+        searchUrl.searchParams.set("language", window.LocalConnectI18n?.getLanguage() || navigator.language || "en");
         const response = await fetch(searchUrl, { headers: { Accept: "application/json" } });
         if (!response.ok) throw new Error("Search failed");
         const results = await response.json();

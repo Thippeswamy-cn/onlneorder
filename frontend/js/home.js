@@ -62,6 +62,13 @@ themeToggle.addEventListener("click", () => {
 const search = document.getElementById("service-search");
 const serviceSearchForm = document.getElementById("service-search-form");
 const serviceSearchResults = document.getElementById("service-search-results");
+const heroSearch = document.getElementById("hero-service-search");
+const heroSearchForm = document.getElementById("hero-service-search-form");
+const heroSearchResults = document.getElementById("hero-service-search-results");
+const searchInterfaces = [
+    { input: search, form: serviceSearchForm, results: serviceSearchResults },
+    { input: heroSearch, form: heroSearchForm, results: heroSearchResults }
+].filter(({ input, form, results }) => input && form && results);
 const serviceCards = [...document.querySelectorAll(".category-card")];
 const categoryChips = [...document.querySelectorAll(".category-chips [data-service-chip]")];
 const moreServicesButton = document.getElementById("more-services");
@@ -106,6 +113,14 @@ function filterProviders(query) {
     if (count) count.textContent = `${visible.length} professional${visible.length === 1 ? "" : "s"}`;
 }
 
+function setSearchValue(value) {
+    searchInterfaces.forEach(({ input }) => { input.value = value; });
+}
+
+function hideServiceSearchResults() {
+    searchInterfaces.forEach(({ results }) => { results.hidden = true; });
+}
+
 function setResponsiveServiceImage(image, source, sizes = "(max-width: 720px) 84vw, 420px") {
     image.src = source;
     if (!source.endsWith("-480.webp")) return;
@@ -116,19 +131,19 @@ function setResponsiveServiceImage(image, source, sizes = "(max-width: 720px) 84
 
 function selectService(card) {
     const serviceName = card.querySelector("strong").textContent;
-    search.value = serviceName;
-    serviceSearchResults.hidden = true;
+    setSearchValue(serviceName);
+    hideServiceSearchResults();
     serviceCards.forEach(item => item.classList.remove("hidden"));
     moreServicesButton.classList.remove("is-selected");
     openCategoryDetails(card);
 }
 
-function showServiceSuggestions(query) {
+function showServiceSuggestions(query, resultsContainer = serviceSearchResults) {
     const term = query.trim().toLowerCase();
-    serviceSearchResults.replaceChildren();
+    resultsContainer.replaceChildren();
     filterServices(term);
     if (!term) {
-        serviceSearchResults.hidden = true;
+        resultsContainer.hidden = true;
         return;
     }
 
@@ -148,38 +163,50 @@ function showServiceSuggestions(query) {
         copy.append(title, description);
         result.append(icon, copy);
         result.addEventListener("click", () => selectService(card));
-        serviceSearchResults.append(result);
+        resultsContainer.append(result);
     });
 
     if (!matches.length) {
         const message = document.createElement("p");
         message.className = "location-search-message";
         message.textContent = "No matching service found.";
-        serviceSearchResults.append(message);
+        resultsContainer.append(message);
     }
-    serviceSearchResults.hidden = false;
+    resultsContainer.hidden = false;
 }
 
-search.addEventListener("input", () => showServiceSuggestions(search.value));
-serviceSearchForm.addEventListener("submit", event => {
-    event.preventDefault();
-    const term = search.value.trim().toLowerCase();
-    const firstMatch = serviceCards.find(card => matchesService(card, term));
-    if (firstMatch) {
-        selectService(firstMatch);
-    } else {
-        showServiceSuggestions(search.value);
-    }
+searchInterfaces.forEach(({ input, form, results }) => {
+    input.addEventListener("input", () => {
+        setSearchValue(input.value);
+        showServiceSuggestions(input.value, results);
+    });
+    form.addEventListener("submit", event => {
+        event.preventDefault();
+        const term = input.value.trim().toLowerCase();
+        if (!term) {
+            openAllServices();
+            return;
+        }
+        const firstMatch = serviceCards.find(card => matchesService(card, term));
+        if (firstMatch) selectService(firstMatch);
+        else showServiceSuggestions(input.value, results);
+    });
 });
 
 document.addEventListener("click", event => {
-    if (!serviceSearchForm.contains(event.target)) serviceSearchResults.hidden = true;
+    searchInterfaces.forEach(({ form, results }) => {
+        if (!form.contains(event.target)) results.hidden = true;
+    });
 });
 
 const requestedService = new URLSearchParams(window.location.search).get("service");
 if (requestedService) {
-    search.value = requestedService.replaceAll("-", " ");
-    const matchingCategory = serviceCards.find(card => matchesService(card, search.value));
+    const cleanUrl = new URL(window.location.href);
+    cleanUrl.searchParams.delete("service");
+    window.history.replaceState(window.history.state, "", `${cleanUrl.pathname}${cleanUrl.search}${cleanUrl.hash}`);
+    const requestedSearch = requestedService.replaceAll("-", " ");
+    setSearchValue(requestedSearch);
+    const matchingCategory = serviceCards.find(card => matchesService(card, requestedSearch));
     if (matchingCategory) window.setTimeout(() => matchingCategory.click());
 }
 
@@ -193,7 +220,7 @@ serviceCards.forEach(card => {
 });
 
 function showAllProviders() {
-    search.value = "";
+    setSearchValue("");
     serviceCards.forEach(card => card.classList.remove("hidden", "is-selected"));
     providers.forEach(card => card.classList.remove("hidden"));
     emptyState.classList.add("hidden");
@@ -243,8 +270,8 @@ serviceCards.forEach(card => {
 
 function openAllServices(event) {
     event?.preventDefault();
-    search.value = "";
-    serviceSearchResults.hidden = true;
+    setSearchValue("");
+    hideServiceSearchResults();
     serviceCards.forEach(card => card.classList.remove("hidden", "is-selected"));
     categoryChips.forEach(chip => chip.classList.remove("is-selected"));
     moreServicesButton.classList.add("is-selected");
@@ -701,7 +728,7 @@ function showBookingStep(step) {
 
 function populateBookingDates() {
     const container = document.getElementById("booking-date-options");
-    const formatter = new Intl.DateTimeFormat("en-IN", { weekday: "short", day: "numeric", month: "short" });
+    const formatter = new Intl.DateTimeFormat(window.LocalConnectI18n?.getLocale() || "en-IN", { weekday: "short", day: "numeric", month: "short" });
     container.replaceChildren(...Array.from({ length: 5 }, (_, index) => {
         const date = new Date();
         date.setDate(date.getDate() + index);
@@ -855,7 +882,8 @@ function createReviewRow(label, value) {
 }
 
 function renderBookingReview() {
-    const dateText = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${bookingDraft.date}T12:00:00`));
+    const locale = window.LocalConnectI18n?.getLocale() || "en-IN";
+    const dateText = new Intl.DateTimeFormat(locale, { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(`${bookingDraft.date}T12:00:00`));
     const serviceFee = Number(bookingDraft.price.replace(/[^\d]/g, ""));
     bookingDraft.platformFee = 29;
     bookingDraft.total = serviceFee + bookingDraft.platformFee;
@@ -866,7 +894,7 @@ function renderBookingReview() {
         createReviewRow("Address", bookingDraft.address),
         createReviewRow("Service price", bookingDraft.price),
         createReviewRow("Platform fee", "₹29"),
-        createReviewRow("Estimated total", `₹${bookingDraft.total.toLocaleString("en-IN")}`)
+        createReviewRow("Estimated total", `₹${bookingDraft.total.toLocaleString(locale)}`)
     );
 }
 
@@ -886,7 +914,7 @@ reviewForm.addEventListener("submit", event => {
         createReviewRow("Service", bookingDraft.service),
         createReviewRow("Professional", bookingDraft.provider),
         createReviewRow("Date and time", `${bookingDraft.date} · ${bookingDraft.time}`),
-        createReviewRow("Estimated total", `₹${bookingDraft.total.toLocaleString("en-IN")}`),
+        createReviewRow("Estimated total", `₹${bookingDraft.total.toLocaleString(window.LocalConnectI18n?.getLocale() || "en-IN")}`),
         createReviewRow("Payment", bookingDraft.payment),
         createReviewRow("Status", bookingDraft.status)
     );
@@ -978,8 +1006,9 @@ categoryChips.forEach(chip => {
         event.preventDefault();
         moreServicesButton.classList.remove("is-selected");
         categoryChips.forEach(item => item.classList.toggle("is-selected", item === chip));
-        search.value = service.replaceAll("-", " ");
-        const matchingCategory = serviceCards.find(card => matchesService(card, search.value));
+        const categorySearch = service.replaceAll("-", " ");
+        setSearchValue(categorySearch);
+        const matchingCategory = serviceCards.find(card => matchesService(card, categorySearch));
         if (matchingCategory) openCategoryDetails(matchingCategory);
     });
 });

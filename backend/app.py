@@ -4,6 +4,7 @@ import os
 import secrets
 import smtplib
 import sqlite3
+import ssl
 import time
 from collections import defaultdict, deque
 from contextlib import contextmanager
@@ -237,16 +238,13 @@ def cached_nominatim(path, parameters):
 
 
 def send_otp_email(email, otp, purpose="account verification"):
-    brevo_api_key = os.getenv("BREVO_API_KEY")
-    smtp_host = os.getenv("SMTP_HOST")
-    smtp_username = os.getenv("SMTP_USERNAME")
+    brevo_api_key = os.getenv("BREVO_API_KEY", "").strip()
+    if brevo_api_key.lower() == "your-brevo-api-key":
+        brevo_api_key = ""
+
+    smtp_host = os.getenv("SMTP_HOST", "").strip()
+    smtp_username = os.getenv("SMTP_USERNAME", "").strip()
     smtp_password = "".join(os.getenv("SMTP_PASSWORD", "").split())
-    from_email = (
-        os.getenv("BREVO_FROM_EMAIL")
-        or os.getenv("SMTP_FROM_EMAIL")
-        or os.getenv("FROM_EMAIL")
-        or smtp_username
-    )
 
     subject = f"Your {purpose} code"
     content = (
@@ -255,6 +253,10 @@ def send_otp_email(email, otp, purpose="account verification"):
     )
 
     if brevo_api_key:
+        from_email = (
+            os.getenv("BREVO_FROM_EMAIL", "").strip()
+            or os.getenv("FROM_EMAIL", "").strip()
+        )
         if not from_email:
             raise OSError("BREVO_FROM_EMAIL is required when BREVO_API_KEY is set")
         payload = json.dumps(
@@ -289,9 +291,32 @@ def send_otp_email(email, otp, purpose="account verification"):
             raise OSError(f"Could not connect to Brevo: {error.reason}") from error
         return True
 
-    if not all((smtp_host, smtp_username, smtp_password, from_email)):
-        app.logger.warning("Development OTP for %s: %s", email, otp)
-        return False
+    from_email = (
+        os.getenv("SMTP_FROM_EMAIL", "").strip()
+        or os.getenv("FROM_EMAIL", "").strip()
+        or smtp_username
+    )
+    missing = [
+        name
+        for name, value in (
+            ("SMTP_HOST", smtp_host),
+            ("SMTP_USERNAME", smtp_username),
+            ("SMTP_PASSWORD", smtp_password),
+            ("SMTP_FROM_EMAIL", from_email),
+        )
+        if not value
+    ]
+    if missing:
+        allow_development_otp = (
+            app.debug
+            or os.getenv("ALLOW_DEVELOPMENT_OTP", "false").lower() == "true"
+        )
+        if allow_development_otp:
+            app.logger.warning("Development OTP for %s: %s", email, otp)
+            return False
+        raise OSError(f"Email delivery is not configured: {', '.join(missing)}")
+    if "@" in smtp_host or "://" in smtp_host:
+        raise OSError("SMTP_HOST must be a hostname such as smtp.gmail.com")
 
     message = EmailMessage()
     message["Subject"] = subject
@@ -303,14 +328,25 @@ def send_otp_email(email, otp, purpose="account verification"):
         smtp_port = int(os.getenv("SMTP_PORT", "587"))
     except ValueError as error:
         raise OSError("SMTP_PORT must be a number") from error
-    use_ssl = os.getenv("SMTP_USE_SSL", "false").lower() == "true"
+    if not 1 <= smtp_port <= 65535:
+        raise OSError("SMTP_PORT must be between 1 and 65535")
+
+    tls_context = ssl.create_default_context()
+    use_ssl = (
+        os.getenv("SMTP_USE_SSL", "false").lower() == "true"
+        or smtp_port == 465
+    )
     if use_ssl:
-        with smtplib.SMTP_SSL(smtp_host, smtp_port, timeout=15) as server:
+        with smtplib.SMTP_SSL(
+            smtp_host, smtp_port, timeout=15, context=tls_context
+        ) as server:
             server.login(smtp_username, smtp_password)
             server.send_message(message)
     else:
         with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as server:
-            server.starttls()
+            server.ehlo()
+            server.starttls(context=tls_context)
+            server.ehlo()
             server.login(smtp_username, smtp_password)
             server.send_message(message)
     return True
@@ -470,7 +506,9 @@ def send_otp():
     if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
         return jsonify(message="Enter a valid email address."), 400
     if user_exists(email):
-        return jsonify(message="An account already exists for this email."), 409
+        return jsonify(
+            message="This email already has an account. Sign in or use Forgot password."
+        ), 409
 
     existing = otp_records.get(email)
     now = time.time()
@@ -490,7 +528,9 @@ def send_otp():
     except (OSError, smtplib.SMTPException):
         app.logger.exception("OTP email delivery failed")
         otp_records.pop(email, None)
-        return jsonify(message="Could not send the email. Check the SMTP configuration."), 502
+        return jsonify(
+            message="Email delivery is temporarily unavailable. Please try again shortly."
+        ), 502
 
     if delivered:
         return jsonify(message="Verification code sent to your email.")
@@ -608,7 +648,9 @@ def request_password_reset():
     except (OSError, smtplib.SMTPException):
         app.logger.exception("Password reset email delivery failed")
         password_reset_records.pop(email, None)
-        return jsonify(message="Could not send the email. Check the SMTP configuration."), 502
+        return jsonify(
+            message="Email delivery is temporarily unavailable. Please try again shortly."
+        ), 502
 
     if delivered:
         return jsonify(message="A password reset code was sent to your email.")

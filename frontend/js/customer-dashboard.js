@@ -30,6 +30,18 @@ const rescheduleForm = document.getElementById("reschedule-form");
 const toast = document.getElementById("toast");
 let toastTimer;
 
+const LANGUAGE_CODES = {
+    English: "en",
+    Kannada: "kn",
+    Telugu: "te",
+    Hindi: "hi"
+};
+
+function normalizeLanguage(value) {
+    const language = String(value || "");
+    return LANGUAGE_CODES[language] || (window.LocalConnectI18n?.languages[language] ? language : "en");
+}
+
 function applyDashboardTheme(theme = localStorage.getItem(STORAGE.theme) || "system") {
     const prefersNight = window.matchMedia("(prefers-color-scheme: dark)").matches;
     document.body.classList.toggle("night-mode", theme === "night" || (theme === "system" && prefersNight));
@@ -71,13 +83,30 @@ function notify(message) {
 }
 
 function getProfile() {
-    return readStorage(STORAGE.profile, {
+    const profile = readStorage(STORAGE.profile, {
         name: localStorage.getItem(STORAGE.user) || "Customer",
         email: "",
         phone: "",
         dateOfBirth: "",
-        language: "English"
+        language: window.LocalConnectI18n?.getLanguage() || "en"
     });
+    profile.language = normalizeLanguage(profile.language);
+    return profile;
+}
+
+function synchronizeLanguagePreference() {
+    const savedLanguage = localStorage.getItem("localConnectLanguage");
+    const storedProfile = readStorage(STORAGE.profile, null);
+    const language = savedLanguage && window.LocalConnectI18n?.languages[savedLanguage]
+        ? savedLanguage
+        : normalizeLanguage(storedProfile?.language);
+    if (storedProfile && normalizeLanguage(storedProfile.language) !== language) {
+        storedProfile.language = language;
+        writeStorage(STORAGE.profile, storedProfile);
+    }
+    if (window.LocalConnectI18n?.getLanguage() !== language) {
+        window.LocalConnectI18n?.setLanguage(language);
+    }
 }
 
 function getAddresses() {
@@ -144,7 +173,8 @@ function statusClass(status) {
 function formatDate(value) {
     if (!value) return "Date to be confirmed";
     const date = new Date(`${value}T12:00:00`);
-    return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(date);
+    const locale = window.LocalConnectI18n?.getLocale() || "en-IN";
+    return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat(locale, { day: "numeric", month: "short", year: "numeric" }).format(date);
 }
 
 function bookingCard(booking) {
@@ -165,7 +195,7 @@ function renderOverview(bookings, addresses, favourites) {
     document.getElementById("summary-completed").textContent = completed.length;
     document.getElementById("summary-favourites").textContent = favourites.length;
     const totalSpent = completed.reduce((sum, booking) => sum + Number(booking.total || String(booking.price || "").replace(/[^\d]/g, "") || 0), 0);
-    document.getElementById("summary-spent").textContent = `₹${totalSpent.toLocaleString("en-IN")}`;
+    document.getElementById("summary-spent").textContent = `₹${totalSpent.toLocaleString(window.LocalConnectI18n?.getLocale() || "en-IN")}`;
     document.getElementById("active-count").textContent = active.length;
     document.getElementById("overview-booking").innerHTML = active.length ? bookingCard(active[0]) : emptyState("◷", "No active bookings", "Your next confirmed service will appear here.", "Find a service");
 }
@@ -209,14 +239,28 @@ profileForm.addEventListener("submit", event => {
     event.preventDefault();
     if (!profileForm.reportValidity()) return;
     const profile = Object.fromEntries(new FormData(profileForm).entries());
+    profile.language = normalizeLanguage(profile.language);
     writeStorage(STORAGE.profile, profile);
     localStorage.setItem(STORAGE.user, profile.name);
+    window.LocalConnectI18n?.setLanguage(profile.language);
     renderIdentity();
     document.getElementById("profile-message").textContent = "Profile saved successfully.";
     notify("Profile updated");
 });
 
 profileForm.addEventListener("reset", () => setTimeout(renderProfileForm));
+
+window.addEventListener("localconnect:languagechange", event => {
+    const language = normalizeLanguage(event.detail?.language);
+    const select = profileForm.elements.language;
+    if (select) select.value = language;
+    const profile = getProfile();
+    if (profile.language !== language) {
+        profile.language = language;
+        writeStorage(STORAGE.profile, profile);
+    }
+    renderAll();
+});
 
 function addressText(address) {
     return [address.street, address.area, address.city, address.state, address.pin].filter(Boolean).join(", ");
@@ -301,7 +345,7 @@ function openBooking(id) {
     if (!booking) return;
     const active = activeStatuses.has(String(booking.status).toLowerCase());
     document.getElementById("booking-detail-title").textContent = booking.id || "Booking details";
-    document.getElementById("booking-detail-content").innerHTML = `<div class="detail-summary"><div><h3>${escapeHtml(booking.service || "Home service")}</h3><p>${escapeHtml(booking.provider || "Professional to be assigned")}</p></div><span class="status ${statusClass(booking.status)}">${escapeHtml(booking.status)}</span></div><div class="detail-grid"><div><small>Date and time</small><strong>${formatDate(booking.date)}<br>${escapeHtml(booking.time || "To be confirmed")}</strong></div><div><small>Service address</small><strong>${escapeHtml(booking.address || "Address not available")}</strong></div><div><small>Estimated total</small><strong>${booking.total ? `₹${Number(booking.total).toLocaleString("en-IN")}` : escapeHtml(booking.price || "To be confirmed")}</strong></div><div><small>Payment</small><strong>${escapeHtml(booking.payment || "Not selected")}</strong></div></div><section class="timeline"><h3>Booking timeline</h3>${timelineSteps(booking)}</section><div class="detail-actions">${active ? `<button class="danger-button" data-cancel-booking="${escapeHtml(booking.id)}">Cancel booking</button><button class="primary-button" data-reschedule="${escapeHtml(booking.id)}">Reschedule</button>` : ""}</div>`;
+    document.getElementById("booking-detail-content").innerHTML = `<div class="detail-summary"><div><h3>${escapeHtml(booking.service || "Home service")}</h3><p>${escapeHtml(booking.provider || "Professional to be assigned")}</p></div><span class="status ${statusClass(booking.status)}">${escapeHtml(booking.status)}</span></div><div class="detail-grid"><div><small>Date and time</small><strong>${formatDate(booking.date)}<br>${escapeHtml(booking.time || "To be confirmed")}</strong></div><div><small>Service address</small><strong>${escapeHtml(booking.address || "Address not available")}</strong></div><div><small>Estimated total</small><strong>${booking.total ? `₹${Number(booking.total).toLocaleString(window.LocalConnectI18n?.getLocale() || "en-IN")}` : escapeHtml(booking.price || "To be confirmed")}</strong></div><div><small>Payment</small><strong>${escapeHtml(booking.payment || "Not selected")}</strong></div></div><section class="timeline"><h3>Booking timeline</h3>${timelineSteps(booking)}</section><div class="detail-actions">${active ? `<button class="danger-button" data-cancel-booking="${escapeHtml(booking.id)}">Cancel booking</button><button class="primary-button" data-reschedule="${escapeHtml(booking.id)}">Reschedule</button>` : ""}</div>`;
     bookingDialog.showModal();
 }
 
@@ -434,4 +478,7 @@ function renderAll() {
 window.addEventListener("hashchange", () => showView(location.hash.slice(1), false));
 hydrateAccountState()
     .catch(() => undefined)
-    .finally(() => showView(location.hash.slice(1) || "overview", false));
+    .finally(() => {
+        synchronizeLanguagePreference();
+        showView(location.hash.slice(1) || "overview", false);
+    });
